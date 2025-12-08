@@ -1,4 +1,10 @@
 import { Document } from "mongoose";
+import { ACTIONS, MODULES, ROLES } from "../config/accessControl";
+
+export interface IPermission {
+    module: MODULES;
+    actions: ACTIONS[];
+}
 
 export interface IUser extends Document {
     username: string
@@ -8,6 +14,8 @@ export interface IUser extends Document {
     refreshToken: string
     createdAt: Date
     updatedAt: Date
+    role: ROLES;
+    permissions: IPermission[];
 
     comparePassword(password: string): Promise<boolean>
     generateAccessToken(): string;
@@ -17,11 +25,18 @@ export interface IUser extends Document {
 export interface IRegisterRequestBody {
     firstName: string;
     lastName: string;
-    email: string;
+    username: string;
     password: string;
+    role: ROLES;
+    permissions: IPermission[];
 }
 
 export interface ILoginBody {
     username: string;
     password: string;
+}
+
+export interface IUpdatePasswordBody {
+    oldPassword: string;
+    newPassword: string;
 }

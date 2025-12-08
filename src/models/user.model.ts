@@ -2,8 +2,27 @@ import mongoose, { Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-import { IUser } from "../types/user.types.js";
+import { IPermission, IUser } from "../types/user.types.js";
 import { JwtExpiry } from "../types/common.types.js";
+import { ACTIONS, MODULES, ROLES } from "../config/accessControl.js";
+
+const PermissionSchema = new Schema<IPermission>(
+    {
+        module: {
+            type: String,
+            enum: Object.values(MODULES),
+            required: true,
+        },
+        actions: [
+            {
+                type: String,
+                enum: Object.values(ACTIONS),
+                required: true,
+            },
+        ],
+    },
+    { _id: false }
+);
 
 const userSchema = new Schema<IUser>({
     username: {
@@ -29,12 +48,18 @@ const userSchema = new Schema<IUser>({
     },
     refreshToken: {
         type: String,
-    }
+    },
+    role: {
+        type: String,
+        enum: Object.values(ROLES),
+        default: ROLES.USER,
+    },
+    permissions: [PermissionSchema],
 }, { timestamps: true })
 
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return 
+    if (!this.isModified("password")) return
     try {
         const salt = await bcrypt.genSalt(10)
         this.password = await bcrypt.hash(this.password, salt)

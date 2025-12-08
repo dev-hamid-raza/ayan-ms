@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { ApiError } from "../utils/ApiError.js"; // adjust path
+import { ApiError } from "../utils/ApiError.js"; 
 
 export const errorHandler = (
     err: any,
