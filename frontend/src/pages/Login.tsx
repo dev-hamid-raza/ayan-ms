@@ -1,10 +1,19 @@
 import { Button } from '@/components/ui/button'
-import React from 'react'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import React, { useState } from 'react'
 
 function Login() {
+  const [Loading, setLoading] = useState(false)
   return (
     <div>
-        <Button variant="default">Button</Button>
+        <Button className='w-full' onClick={() => setLoading((perv) => !perv)} variant="default">
+          
+            {Loading ? ("Loading...") : ("Log In")} 
+           <Spinner className={`size-0 ${Loading && "size-7 fade-in"} transition-all`} />
+        </Button>
+        <Input />
+
     </div>
   )
 }
