@@ -31,6 +31,13 @@ export interface IRegisterRequestBody {
     permissions: IPermission[];
 }
 
+export interface IUpdateUserRequestBody {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    permissions?: IPermission[];
+}
+
 export interface ILoginBody {
     username: string;
     password: string;

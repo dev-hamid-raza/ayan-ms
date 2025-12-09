@@ -4,7 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { ILoginBody, IRegisterRequestBody, IUpdatePasswordBody } from "../types/user.types.js"
+import { ILoginBody, IRegisterRequestBody, IUpdatePasswordBody, IUpdateUserRequestBody } from "../types/user.types.js"
 import { generateAccessTokenAndRefreshToken } from "../lib/generateJwtToken.js"
 import { validatePermissionsInput } from "../utils/validatePermissions.js"
 import { ROLES } from "../config/accessControl.js"
@@ -37,7 +37,7 @@ export const registerUser = asyncHandler(async (
     const user = await User.create({
         firstName,
         lastName,
-        username,
+        username: username.toLowerCase().trim(),
         password,
         permissions,
         role: ROLES.USER
@@ -168,5 +168,75 @@ export const updateMyPassword = asyncHandler(
         return res
             .status(200)
             .json(new ApiResponse(200, {}, "Password updated successfully"));
+    }
+);
+
+export const updateUser = asyncHandler(async (req: Request<{ id: string }, {}, IUpdateUserRequestBody>, res) => {
+    const { id } = req.params
+    const { firstName, lastName, username, permissions } = req.body
+
+    const user = await User.findById(id)
+
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    if (typeof username === "string" && username.trim() !== "") {
+        const existingUser = await User.findOne({ username, _id: { $ne: id } });
+        if (existingUser) {
+            throw new ApiError(400, "This username is already taken");
+        }
+        user.username = username.trim();
+    }
+
+    if (typeof firstName === "string" && firstName.trim() !== "") {
+        user.firstName = firstName.trim();
+    }
+
+    if (typeof lastName === "string" && lastName.trim() !== "") {
+        user.lastName = lastName.trim();
+    }
+
+    if (typeof permissions !== "undefined") {
+        const { valid, errors } = validatePermissionsInput(permissions);
+        if (!valid) {
+            throw new ApiError(400, "Invalid permissions payload", errors);
+        }
+        user.permissions = permissions;
+    }
+
+    await user.save()
+
+    const updatedUser = await User.findById(id).select("-password -refreshToken")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedUser, "User updated successfully")
+        )
+})
+
+export const adminResetUserPassword = asyncHandler(async (req: Request<{ id: string }, {}, { password: string }>, res: Response) => {
+        const { id } = req.params;
+        const { password } = req.body;
+
+        if (typeof password !== "string" || password.trim() === "") {
+            throw new ApiError(400, "Password is required");
+        }
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        user.password = password.trim(); 
+        await user.save();
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, null, "Password reset successfully by admin")
+            );
     }
 );
