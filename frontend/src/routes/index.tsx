@@ -3,6 +3,7 @@ import Login from "../pages/Login";
 import { ROUTES } from "../CONSTANTS/ROUTES";
 import Dashboard from "../pages/Dashboard";
 import MainLayout from "../components/layouts/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const routes: RouteObject[] = [
   {
@@ -11,7 +12,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/*",
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: ROUTES.DASHBOARD,
