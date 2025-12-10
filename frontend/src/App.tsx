@@ -12,7 +12,7 @@ export default function App() {
       <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
         <Toaster position='top-right' />
         <AuthProvider>
-          <RouterProvider router={router} />
+            <RouterProvider router={router} />
         </AuthProvider>
       </ThemeProvider>
     </>
