@@ -29,6 +29,7 @@ export interface IUser {
 	firstName: string
 	lastName: string
     permissions: IPermission[];
+    role: ROLES;
 }
 
 export interface AuthContextType {
