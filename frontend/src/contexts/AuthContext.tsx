@@ -1,9 +1,10 @@
 import LoadingPage from '@/components/common/LoadingPage';
 import { checkSession } from '@/services/auth';
-import type {
-	AuthContextType,
-	AuthProviderProps,
-	IUser,
+import {
+	ROLES,
+	type AuthContextType,
+	type AuthProviderProps,
+	type IUser,
 } from '@/types/auth.types';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -17,7 +18,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		lastName: '',
 		email: '',
 		username: '',
-		permissions: []
+		permissions: [],
+		role: ROLES.USER
 	});
 
 	useEffect(() => {

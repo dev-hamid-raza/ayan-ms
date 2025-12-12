@@ -2,5 +2,6 @@ const BASE = '/users'
 
 export const AUTH_API = {
     LOGIN: `${BASE}/login`,
-    CHECK_SESSION: `${BASE}/check-session`
+    CHECK_SESSION: `${BASE}/check-session`,
+    LOGOUT: `${BASE}/logout`,
 }

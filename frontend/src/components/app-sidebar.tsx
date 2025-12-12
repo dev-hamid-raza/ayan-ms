@@ -61,89 +61,6 @@ const navItem: NavGroup = [
 
 
 
-  // This is sample data.
-  const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain:   [
-    {
-      title: "Gate Pass",
-      url: "/gate-pass",
-      icon: SquareTerminal,
-      // isActive: true,
-      items: [
-        {
-          title: "Gate Pass In",
-          url: "#",
-        },
-        {
-          title: "Gate Pass Out",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Rate List",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Stitching Rate",
-          url: "#",
-        },
-        {
-          title: "Treading Rate",
-          url: "#",
-        },
-        {
-          title: "Checking Rate",
-          url: "#",
-        },
-        {
-          title: "Packing Rate",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const {user , loading} = useAuth()
@@ -160,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
         </>

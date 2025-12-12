@@ -29,18 +29,34 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
+import { ROLES, type IUser } from "@/types/auth.types"
+import { toast } from "sonner"
+import { logout } from "@/services/auth"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function NavUser({
     user,
-}: {
-    user: {
-        name: string
-        email: string
-        avatar: string
-    }
-}) {
+}: {user: IUser}) {
     const { isMobile } = useSidebar()
-
+    const { setIsAuthenticated, setUser} = useAuth() 
+    const handleLogout = async () => {
+        try {
+            const res = await logout()
+            if(res.success) {
+                setIsAuthenticated(false)
+                setUser({
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                        username: '',
+                        permissions: [],
+                        role: ROLES.USER
+                    })
+            }
+        } catch (error) {
+            toast.error(error as string)
+        }
+    }
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -51,12 +67,12 @@ export function NavUser({
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
+                                <AvatarFallback className="rounded-lg">{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">{user.name}</span>
-                                <span className="truncate text-xs">{user.email}</span>
+                                <span className="truncate font-medium">{`${user.firstName} ${user.lastName}`}</span>
+                                <span className="truncate text-xs">{user.username}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
@@ -70,12 +86,11 @@ export function NavUser({
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={user.avatar} alt={user.name} />
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                    <AvatarFallback className="rounded-lg">{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">{user.name}</span>
-                                    <span className="truncate text-xs">{user.email}</span>
+                                    <span className="truncate font-medium">{`${user.firstName} ${user.lastName}`}</span>
+                                    <span className="truncate text-xs">{user.username}</span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>
@@ -102,7 +117,7 @@ export function NavUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout} >
                             <LogOut />
                             Log out
                         </DropdownMenuItem>
