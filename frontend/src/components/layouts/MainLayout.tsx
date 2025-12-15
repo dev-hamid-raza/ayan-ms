@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { AppSidebar } from '../app-sidebar'
+import { AppSidebar } from '../sidebar/app-sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar'
 
 function MainLayout() {

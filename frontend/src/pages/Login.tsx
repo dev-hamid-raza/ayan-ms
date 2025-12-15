@@ -37,7 +37,7 @@ function Login() {
       const res = await postData({ username, password })
       if (res.success) {
         toast.success("Login successfully")
-        setUser(res.data)
+        setUser(res.data.user)
         setIsAuthenticated(true)
         navigate('dashboard')
       }

@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const sessionActive = await checkSession()
                 if(sessionActive.success) {
                     setIsAuthenticated(true)
-                    setUser(sessionActive.data)
+                    setUser(sessionActive.data.user)
                 }
                 else {
 					setIsAuthenticated(false);
