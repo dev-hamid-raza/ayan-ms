@@ -6,6 +6,7 @@ import MainLayout from "../components/layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import GatePassOut from "@/pages/GatePassOut";
 import { MODULES } from "@/types/auth.types";
+import UserManagement from "@/pages/UserManagement";
 
 export const routes: RouteObject[] = [
   {
@@ -31,7 +32,15 @@ export const routes: RouteObject[] = [
             <GatePassOut />
           </ProtectedRoute>
       )
-      }
+      },
+      {
+        path: ROUTES.ADMIN.USER_MANAGEMENT,
+        element: (
+          <ProtectedRoute module={MODULES.ADMIN_PANEL}>
+            <UserManagement />
+          </ProtectedRoute>
+      )
+      },
     ]
   },
 ]

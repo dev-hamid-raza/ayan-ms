@@ -1,6 +1,6 @@
 import { MODULES } from "@/types/auth.types";
 import type { NavGroup } from "@/types/nav.types";
-import { Bot, SquareTerminal } from "lucide-react";
+import { Bot, SquareTerminal, ShieldUser } from "lucide-react";
 
 export const NAV_ITEM: NavGroup = [
     {
@@ -30,6 +30,18 @@ export const NAV_ITEM: NavGroup = [
                 title: "Stitching Rate",
                 url: "#",
                 permission: MODULES.STITCHING_RATES
+            },
+        ],
+    },
+    {
+        title: "Admin",
+        url: "#",
+        icon: ShieldUser,
+        items: [
+            {
+                title: "User Management",
+                url: "/user-management",
+                permission: MODULES.ADMIN_PANEL
             },
         ],
     },

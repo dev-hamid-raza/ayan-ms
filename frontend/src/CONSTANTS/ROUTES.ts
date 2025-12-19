@@ -5,5 +5,8 @@ export const ROUTES = {
     GATE_PASS: {
         IN: 'gate-pass-in',
         OUT: 'gate-pass-out',
-    }
+    },
+    ADMIN : {
+        USER_MANAGEMENT: 'user-management',
+    },
 }

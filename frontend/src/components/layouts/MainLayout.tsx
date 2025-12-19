@@ -7,7 +7,7 @@ function MainLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <SidebarTrigger />
+        {/* <SidebarTrigger /> */}
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

@@ -9,6 +9,7 @@ export enum MODULES {
     GATE_PASS_IN = 'GATE_PASS_IN',
     GATE_PASS_OUT = 'GATE_PASS_OUT',
     STITCHING_RATES = 'STITCHING_RATES',
+    ADMIN_PANEL = 'ADMIN_PANEL',
 }
 
 export enum ACTIONS {
@@ -24,25 +25,25 @@ export interface IPermission {
 }
 
 export interface IUser {
-	username: string
-	email: string
-	firstName: string
-	lastName: string
+    username: string
+    email: string
+    firstName: string
+    lastName: string
     permissions: IPermission[];
     role: ROLES;
 }
 
 export interface AuthContextType {
-	isAuthenticated: boolean;
-	loading: boolean;
-	user: IUser
-	setUser: (value: IUser) => void
-	setIsAuthenticated: (value: boolean) => void;
-	setLoading: (value: boolean) => void;
+    isAuthenticated: boolean;
+    loading: boolean;
+    user: IUser
+    setUser: (value: IUser) => void
+    setIsAuthenticated: (value: boolean) => void;
+    setLoading: (value: boolean) => void;
 }
 
 export interface AuthProviderProps {
-	children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 export interface IUserDataResponse {
