@@ -240,3 +240,13 @@ export const adminResetUserPassword = asyncHandler(async (req: Request<{ id: str
             );
     }
 );
+
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+    const users = await User.find().select("-password -refreshToken")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, { users }, "Users fetched successfully")
+        )
+})
