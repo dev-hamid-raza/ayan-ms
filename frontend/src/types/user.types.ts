@@ -51,3 +51,5 @@ export interface IUserDataResponse {
 }
 
 export type IUserResponse = ApiResponse<IUserDataResponse>
+
+export type IUserListResponse = ApiResponse<IUser[]>

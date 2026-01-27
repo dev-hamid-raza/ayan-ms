@@ -247,6 +247,6 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, { users }, "Users fetched successfully")
+            new ApiResponse(200, users, "Users fetched successfully")
         )
 })

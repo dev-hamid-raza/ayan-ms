@@ -1,6 +1,6 @@
 import { USER_API } from "@/CONSTANTS/API/USER" 
 import { getApi, postApi } from "./apiClient"
-import type { IUserResponse } from "@/types/user.types"
+import type { IUserListResponse, IUserResponse } from "@/types/user.types"
 import type { ApiResponse } from "@/types/api.types"
 
 export const login = async (body: {
@@ -41,6 +41,13 @@ export const registerUser = async (body: {
     const res = await postApi<ApiResponse<IUserResponse>>({
         url: USER_API.REGISTER,
         body
+    })
+    return res.data
+}
+
+export const fetchUsers = async () => {
+    const res = await getApi<IUserListResponse>({
+        url: USER_API.USERS,
     })
     return res.data
 }
