@@ -29,9 +29,9 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { ROLES, type IUser } from "@/types/auth.types"
+import { ROLES, type IUser } from "@/types/user.types"
 import { toast } from "sonner"
-import { logout } from "@/services/auth"
+import { logout } from "@/services/user"
 import { useAuth } from "@/contexts/AuthContext"
 
 export function NavUser({

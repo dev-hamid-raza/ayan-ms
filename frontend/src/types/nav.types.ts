@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import type { MODULES } from "./auth.types"
+import type { MODULES } from "./user.types"
 
 export interface NavItem {
     title: string

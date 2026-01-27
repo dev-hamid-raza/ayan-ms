@@ -1,11 +1,11 @@
 import LoadingPage from '@/components/common/LoadingPage';
-import { checkSession } from '@/services/auth';
+import { checkSession } from '@/services/user';
 import {
 	ROLES,
 	type AuthContextType,
 	type AuthProviderProps,
 	type IUser,
-} from '@/types/auth.types';
+} from '@/types/user.types';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

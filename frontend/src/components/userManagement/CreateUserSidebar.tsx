@@ -13,9 +13,12 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { ScrollArea } from "../ui/scroll-area"
 import { PermissionCard } from "../common/UserPermissionCard"
-import { ACTIONS, MODULES, type IPermission } from "@/types/auth.types"
+import { ACTIONS, MODULES, type IPermission } from "@/types/user.types"
+import { toast } from "sonner"
+import { registerUser } from "@/services/user"
+import usePostFn from "@/hooks/usePostFn"
+import { Spinner } from "../ui/spinner"
 
 // ✅ your enums + types
 
@@ -41,6 +44,7 @@ export function CreateUserSidebar() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
+    const { loading, postData } = usePostFn(registerUser)
 
     // ✅ enum-safe: module -> actions[]
     const [permissionsByModule, setPermissionsByModule] = useState<
@@ -59,11 +63,11 @@ export function CreateUserSidebar() {
             .filter((p) => p.actions.length > 0) // ✅ removes empty modules
     }, [permissionsByModule])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
 
         if (password !== confirmPassword) {
-            console.error("Passwords do not match")
+            toast.error("Passwords do not match")
             return
         }
 
@@ -76,8 +80,12 @@ export function CreateUserSidebar() {
             password,
             permissions: permissionsArray,
         }
-
-        console.log("CREATE USER PAYLOAD:", payload)
+        try {
+            const res = await postData(payload)
+            console.log(res, "res")
+        } catch (error) {
+            toast.error(error as string)
+        }
     }
 
     return (
@@ -91,7 +99,6 @@ export function CreateUserSidebar() {
                     <SheetTitle>Create New User</SheetTitle>
                 </SheetHeader>
 
-                {/* <form onSubmit={handleSubmit} className=""> */}
                     <div className="grid flex-1 auto-rows-min gap-6 px-4 overflow-auto">
 
                     <div className="">
@@ -162,7 +169,7 @@ export function CreateUserSidebar() {
                     </div>
 
                     <SheetFooter className="border-t">
-                        <Button type="submit">Save changes</Button>
+                        <Button onClick={handleSubmit}>{loading ? <Spinner /> : "Save changes"}</Button>
 
                         <SheetClose asChild>
                             <Button type="button" variant="outline">
@@ -170,7 +177,6 @@ export function CreateUserSidebar() {
                             </Button>
                         </SheetClose>
                     </SheetFooter>
-                {/* </form> */}
             </SheetContent>
         </Sheet>
     )

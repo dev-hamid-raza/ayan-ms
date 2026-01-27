@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingPage from "@/components/common/LoadingPage";
-import { MODULES } from "@/types/auth.types";
+import { MODULES } from "@/types/user.types";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;

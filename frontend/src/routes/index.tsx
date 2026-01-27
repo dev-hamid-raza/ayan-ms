@@ -5,7 +5,7 @@ import Dashboard from "../pages/Dashboard";
 import MainLayout from "../components/layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import GatePassOut from "@/pages/GatePassOut";
-import { MODULES } from "@/types/auth.types";
+import { MODULES } from "@/types/user.types";
 import UserManagement from "@/pages/UserManagement";
 
 export const routes: RouteObject[] = [

@@ -1,4 +1,4 @@
-import type { IUser } from "@/types/auth.types";
+import type { IUser } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
 
 function isDefined<T>(v: T | undefined): v is T {

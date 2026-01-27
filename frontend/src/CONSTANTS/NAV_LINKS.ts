@@ -1,4 +1,4 @@
-import { MODULES } from "@/types/auth.types";
+import { MODULES } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
 import { Bot, SquareTerminal, ShieldUser } from "lucide-react";
 
