@@ -45,6 +45,25 @@ export const registerUser = async (body: {
     return res.data
 }
 
+export const updateUser = async (body: {
+    id: string
+    username: string
+    firstName: string
+    lastName: string
+    password?: string
+    permissions: {
+        module?: string;
+        actions?: string[];
+    }[];
+}) => {
+    const { id, ...payload } = body
+    const res = await postApi<ApiResponse<IUserResponse>>({
+        url: USER_API.UPDATE(id),
+        body: payload
+    })
+    return res.data
+}
+
 export const fetchUsers = async () => {
     const res = await getApi<IUserListResponse>({
         url: USER_API.USERS,

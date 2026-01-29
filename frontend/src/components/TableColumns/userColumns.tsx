@@ -2,6 +2,8 @@ import { IUser, IPermission, ROLES } from "@/types/user.types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { formatModuleName } from "@/utils/text"
 import { Badge } from "../ui/badge"
+import { Key, Lock, Pen, RotateCw, Trash } from "lucide-react"
+import { Button } from "../ui/button"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -51,7 +53,7 @@ const PermissionCell = ({
     )
 }
 
-export const userColumns: ColumnDef<IUser>[] = [
+export const userColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUser) => void): ColumnDef<IUser>[] => [
     {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         header: "Full Name",
@@ -73,6 +75,27 @@ export const userColumns: ColumnDef<IUser>[] = [
                 permissions={row.getValue("permissions")}
                 role={row.original.role}
             />
+        ),
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+            <div className="flex gap-2">
+                <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={() => onEdit(row.original)}
+                >
+                    <Pen className="w-4 h-4" />
+                </Button>
+                <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
+                    <Key  className="w-4 h-4" />
+                </Button>
+                <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
+                    <Trash className="w-4 h-4 text-destructive" />
+                </Button>
+            </div>
         ),
     },
 ]

@@ -10,9 +10,9 @@ router.route("/login").post(loginUser);
 
 router.route("/logout").get(verifyJWT, logoutUser);
 router.route("/register").post(verifyJWT, authorizeRole(ROLES.ADMIN), registerUser);
-router.route("/me/password").patch(verifyJWT, updateMyPassword);
-router.route("/:id").put(verifyJWT,authorizeRole(ROLES.ADMIN), updateUser);
-router.route("/:id/password").patch(verifyJWT,authorizeRole(ROLES.ADMIN), adminResetUserPassword);
+router.route("/me/password").post(verifyJWT, updateMyPassword);
+router.route("/:id").post(verifyJWT,authorizeRole(ROLES.ADMIN), updateUser);
+router.route("/:id/password").post(verifyJWT,authorizeRole(ROLES.ADMIN), adminResetUserPassword);
 router.route('/check-session').get(verifyJWT, checkAuthStatus)
 router.route('/').get(verifyJWT, authorizeRole(ROLES.ADMIN), getAllUsers)
 

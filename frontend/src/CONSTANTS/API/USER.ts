@@ -6,4 +6,5 @@ export const USER_API = {
     LOGOUT: `${BASE}/logout`,
     REGISTER: `${BASE}/register`,
     USERS: `${BASE}`,
+    UPDATE: (id: string) => `${BASE}/${id}`,
 }
