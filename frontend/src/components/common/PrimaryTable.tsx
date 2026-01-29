@@ -21,7 +21,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
 }
 
-export function DataTable<TData, TValue>({
+export function PrimaryTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
@@ -34,7 +34,7 @@ export function DataTable<TData, TValue>({
     return (
         <div className="overflow-hidden">
             <Table>
-                <TableHeader>
+                <TableHeader className="bg-secondary">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {

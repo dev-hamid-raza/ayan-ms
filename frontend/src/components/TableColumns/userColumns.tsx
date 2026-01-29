@@ -51,7 +51,7 @@ const PermissionCell = ({
     )
 }
 
-export const columns: ColumnDef<IUser>[] = [
+export const userColumns: ColumnDef<IUser>[] = [
     {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         header: "Full Name",

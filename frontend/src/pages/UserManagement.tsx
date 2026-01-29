@@ -1,20 +1,25 @@
 import Header from '@/components/common/Header'
-import { columns } from '@/components/payments/columns'
-import { DataTable } from '@/components/payments/data-table'
+import { userColumns } from '@/components/TableColumns/userColumns'
+import { PrimaryTable } from '@/components/common/PrimaryTable'
 import { CreateUserSidebar } from '@/components/userManagement/CreateUserSidebar'
 import useFetchFn from '@/hooks/useFetch'
 import { fetchUsers } from '@/services/user'
-import React from 'react'
+import { toast } from 'sonner'
+import { Spinner } from '@/components/ui/spinner'
 
 function UserManagement() {
     const { data, error, loading } = useFetchFn(fetchUsers)
-    console.log(data)
+    if (error) {
+        toast.error(error)
+    }
+
     return (
         <div>
             <Header title='User Management' button={<CreateUserSidebar />} />
-            <div>
-                {data?.data &&
-                    <DataTable columns={columns} data={data?.data} />
+            <div className='px-5 mt-5'>
+                {loading ? <Spinner /> :
+                    data?.data &&
+                    <PrimaryTable columns={userColumns} data={data?.data} />
                 }
             </div>
         </div>

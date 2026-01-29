@@ -12,6 +12,8 @@ import { toast } from "sonner"
 function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [usernameError, setUsernameError ] = useState(false)
+  const [passwordError, setPasswordError ] = useState(false)
   const { setUser, isAuthenticated, setIsAuthenticated } = useAuth()
   const navigate = useNavigate()
   const { loading, postData } = usePostFn(login)
@@ -25,10 +27,12 @@ function Login() {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (username === '' || username === undefined) {
+      setUsernameError(true)
       toast.error('Username is required');
       return;
     }
     if (password === '' || password === undefined) {
+      setPasswordError(true)
       toast.error('Password is required');
       return;
     }
@@ -57,6 +61,7 @@ function Login() {
               Username
             </Label>
             <Input
+              aria-invalid={usernameError}
               id="username"
               placeholder="Enter your username"
               onChange={(e) => setUsername(e.target.value)}
@@ -68,7 +73,8 @@ function Login() {
               className="mb-0.5 text-md">
               Password
             </Label>
-            <Input
+            <Input 
+              aria-invalid={passwordError}
               id="Password"
               placeholder="Enter your password"
               type="password"

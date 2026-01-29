@@ -49,9 +49,7 @@ export function CreateUserSidebar() {
     // ✅ enum-safe: module -> actions[]
     const [permissionsByModule, setPermissionsByModule] = useState<
         Partial<Record<MODULES, ACTIONS[]>>
-    >({
-        [MODULES.GATE_PASS_IN]: [ACTIONS.CREATE, ACTIONS.READ, ACTIONS.UPDATE],
-    })
+    >({})
 
     // ✅ convert to API format: IPermission[]
     const permissionsArray: IPermission[] = useMemo(() => {
@@ -71,7 +69,6 @@ export function CreateUserSidebar() {
             return
         }
 
-        console.log("permissionsByModule:", permissionsByModule)
 
         const payload = {
             username,
