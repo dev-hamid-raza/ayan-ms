@@ -4,6 +4,7 @@ import { formatModuleName } from "@/utils/text"
 import { Badge } from "../ui/badge"
 import { Key, Lock, Pen, RotateCw, Trash } from "lucide-react"
 import { Button } from "../ui/button"
+import PrimaryTooltip from "../common/PrimaryTooltip"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -82,19 +83,27 @@ export const userColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUse
         header: "Actions",
         cell: ({ row }) => (
             <div className="flex gap-2">
-                <Button
-                    size="icon-sm"
-                    variant="ghost"
-                    onClick={() => onEdit(row.original)}
-                >
-                    <Pen className="w-4 h-4" />
-                </Button>
-                <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
-                    <Key  className="w-4 h-4" />
-                </Button>
-                <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
-                    <Trash className="w-4 h-4 text-destructive" />
-                </Button>
+                <PrimaryTooltip content="Edit User">
+                    <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        onClick={() => onEdit(row.original)}
+                    >
+                        <Pen className="w-4 h-4" />
+                    </Button>
+                </PrimaryTooltip>
+
+                <PrimaryTooltip content="Reset Password">
+                    <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
+                        <Key className="w-4 h-4" />
+                    </Button>
+                </PrimaryTooltip>
+
+                <PrimaryTooltip content="Delete User">
+                    <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
+                        <Trash className="w-4 h-4 text-destructive" />
+                    </Button>
+                </PrimaryTooltip>
             </div>
         ),
     },
