@@ -175,6 +175,38 @@ export const updateUser = asyncHandler(async (req: Request<{ id: string }, {}, I
     const { id } = req.params
     const { firstName, lastName, username, permissions } = req.body
 
+    if (!req.body || typeof req.body !== "object") {
+        throw new ApiError(400, "Request body is required")
+    }
+
+    const allowedKeys = ["firstName", "lastName", "username", "permissions"]
+    const payloadKeys = Object.keys(req.body)
+
+    if (payloadKeys.length === 0) {
+        throw new ApiError(400, "At least one field is required")
+    }
+
+    const invalidKeys = payloadKeys.filter((key) => !allowedKeys.includes(key))
+    if (invalidKeys.length > 0) {
+        throw new ApiError(400, `Invalid field(s): ${invalidKeys.join(", ")}`)
+    }
+
+    if (typeof username !== "undefined" && (typeof username !== "string" || username.trim() === "")) {
+        throw new ApiError(400, "Username must be a non-empty string")
+    }
+
+    if (typeof firstName !== "undefined" && (typeof firstName !== "string" || firstName.trim() === "")) {
+        throw new ApiError(400, "First name must be a non-empty string")
+    }
+
+    if (typeof lastName !== "undefined" && (typeof lastName !== "string" || lastName.trim() === "")) {
+        throw new ApiError(400, "Last name must be a non-empty string")
+    }
+
+    if (typeof permissions !== "undefined" && !Array.isArray(permissions)) {
+        throw new ApiError(400, "Permissions must be an array")
+    }
+
     const user = await User.findById(id)
 
     if (!user) {
@@ -212,14 +244,13 @@ export const updateUser = asyncHandler(async (req: Request<{ id: string }, {}, I
     return res
         .status(200)
         .json(
-            new ApiResponse(200, updatedUser, "User updated successfully")
+            new ApiResponse(200, null, "User updated successfully")
         )
 })
 
 export const adminResetUserPassword = asyncHandler(async (req: Request<{ id: string }, {}, { password: string }>, res: Response) => {
         const { id } = req.params;
         const { password } = req.body;
-
         if (typeof password !== "string" || password.trim() === "") {
             throw new ApiError(400, "Password is required");
         }

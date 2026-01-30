@@ -54,7 +54,11 @@ const PermissionCell = ({
     )
 }
 
-export const userColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUser) => void): ColumnDef<IUser>[] => [
+export const userColumns = (
+    onEdit: (user: IUser) => void, 
+    onDelete: (user: IUser) => void,
+    onUpdatePassword: (user: IUser) => void
+): ColumnDef<IUser>[] => [
     {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         header: "Full Name",
@@ -94,7 +98,7 @@ export const userColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUse
                 </PrimaryTooltip>
 
                 <PrimaryTooltip content="Reset Password">
-                    <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
+                    <Button size="icon-sm" variant="ghost" onClick={() => onUpdatePassword(row.original)}>
                         <Key className="w-4 h-4" />
                     </Button>
                 </PrimaryTooltip>

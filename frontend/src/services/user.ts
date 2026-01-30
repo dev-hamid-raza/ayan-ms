@@ -57,7 +57,20 @@ export const updateUser = async (body: {
     }[];
 }) => {
     const { id, ...payload } = body
-    const res = await postApi<ApiResponse<IUserResponse>>({
+    const res = await postApi<ApiResponse<null>>({
+        url: USER_API.UPDATE(id),
+        body: payload
+    })
+    return res.data
+}
+
+export const updateUserPasswordByAdmin = async (body: {
+    id: string
+    password: string
+
+}) => {
+    const { id, ...payload } = body
+    const res = await postApi<ApiResponse<null>>({
         url: USER_API.UPDATE(id),
         body: payload
     })

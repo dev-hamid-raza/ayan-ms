@@ -46,10 +46,7 @@ export interface AuthProviderProps {
     children: React.ReactNode;
 }
 
-export interface IUserDataResponse {
-    user: IUser
-}
 
-export type IUserResponse = ApiResponse<IUserDataResponse>
+export type IUserResponse = ApiResponse<null>
 
 export type IUserListResponse = ApiResponse<IUser[]>
