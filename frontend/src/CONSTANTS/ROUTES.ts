@@ -4,7 +4,7 @@ export const ROUTES = {
     PROFILE: '/profile',
     GATE_PASS: {
         IN: 'gate-pass-in',
-        OUT: 'gate-pass-out',
+        OUT: 'outward-gate-pass',
     },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',

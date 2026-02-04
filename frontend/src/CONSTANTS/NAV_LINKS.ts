@@ -16,7 +16,7 @@ export const NAV_ITEM: NavGroup = [
             },
             {
                 title: "Gate Pass Out",
-                url: "/gate-pass-out",
+                url: "/outward-gate-pass",
                 permission: MODULES.GATE_PASS_OUT
             },
         ],

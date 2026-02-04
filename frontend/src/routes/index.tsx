@@ -4,9 +4,9 @@ import { ROUTES } from "../CONSTANTS/ROUTES";
 import Dashboard from "../pages/Dashboard";
 import MainLayout from "../components/layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
-import GatePassOut from "@/pages/GatePassOut";
 import { MODULES } from "@/types/user.types";
 import UserManagement from "@/pages/UserManagement";
+import OutwardGatePass from "@/pages/OutwardGatePass";
 
 export const routes: RouteObject[] = [
   {
@@ -29,7 +29,7 @@ export const routes: RouteObject[] = [
         path: ROUTES.GATE_PASS.OUT,
         element: (
           <ProtectedRoute module={MODULES.GATE_PASS_OUT}>
-            <GatePassOut />
+            <OutwardGatePass />
           </ProtectedRoute>
       )
       },
