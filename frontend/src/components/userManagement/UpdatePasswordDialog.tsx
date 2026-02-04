@@ -43,7 +43,10 @@ export function UpdatePasswordDialog({ open, onOpenChange, user }: UpdatePasswor
 
         try {
             const res = await postData({id: user._id,password: password})
-            if(res.success) toast.success("Password update successfuly")
+            if(res.success) {
+                onOpenChange(false)
+                toast.success("Password update successfuly")
+            }
         } catch (error) {
             toast.error(error as string)
         }
