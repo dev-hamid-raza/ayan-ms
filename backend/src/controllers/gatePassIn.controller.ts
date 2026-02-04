@@ -3,13 +3,16 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { IGatePassInRequestBody, IGatePassInItems } from "../types/gatePassIn.types";
 import { ApiError } from "../utils/ApiError";
 import { GatePassIn } from "../models/gatePassIn.model";
-import { Counter } from "../models/counter.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
 // Function to validate the items array
-const validateGatePassInItems = (items: IGatePassInItems[]) => {
-    if (!items || items.length === 0) {
+const validateItems = (items: IGatePassInItems[]) => {
+    if (!Array.isArray(items) || items.length === 0) {
         throw new ApiError(400, "Items array cannot be empty");
+    }
+
+    if (items.length > 12) {
+        throw new ApiError(400, "Items array cannot exceed 12 items");
     }
 
     items.forEach((item, index) => {
@@ -31,50 +34,96 @@ const validateGatePassInItems = (items: IGatePassInItems[]) => {
     });
 };
 
-// Function to validate the gate pass in object
-const validateGatePassIn = (data: IGatePassInRequestBody) => {
-    // Required fields validation
-    if (!data.purpose || typeof data.purpose !== "string") {
-        throw new ApiError(400, "Purpose is required and must be a string");
-    }
-    if (!data.type || (data.type !== "IN" && data.type !== "OUT")) {
-        throw new ApiError(400, "Type must be either 'IN' or 'OUT'");
-    }
-    if (!data.vehicleNumber || typeof data.vehicleNumber !== "string") {
-        throw new ApiError(400, "Vehicle number is required and must be a string");
-    }
-    if (!data.nameTo || typeof data.nameTo !== "string") {
-        throw new ApiError(400, "NameTo is required and must be a string");
-    }
-    if (!data.issuedBy || typeof data.issuedBy !== "string") {
-        throw new ApiError(400, "IssuedBy is required and must be a string");
-    }
-    if (!data.receivedBy || typeof data.receivedBy !== "string") {
-        throw new ApiError(400, "ReceivedBy is required and must be a string");
-    }
-    if (!data.date || !(data.date instanceof Date)) {
-        throw new ApiError(400, "Date is required and must be a valid date");
-    }
-    if (!data.mobileNumber || !/^[0-9]{10}$/.test(data.mobileNumber)) {
-        throw new ApiError(400, "Mobile number is required and must be a valid 10-digit number");
+// Function to validate gate pass in payload
+const validateGatePassInPayload = (
+    data: Partial<IGatePassInRequestBody>,
+    options: { requireAll: boolean }
+) => {
+    const { requireAll } = options;
+
+    if (!data || typeof data !== "object") {
+        throw new ApiError(400, "Request body is missing");
     }
 
-    // Validate the items array
-    validateGatePassInItems(data.items);
+    if (requireAll) {
+        if (!data.purpose || typeof data.purpose !== "string") {
+            throw new ApiError(400, "Purpose is required and must be a string");
+        }
+        if (!data.type || typeof data.type !== "string") {
+            throw new ApiError(400, "Type is required and must be a string");
+        }
+        if (!data.vehicleNumber || typeof data.vehicleNumber !== "string") {
+            throw new ApiError(400, "Vehicle number is required and must be a string");
+        }
+        if (!data.nameTo || typeof data.nameTo !== "string") {
+            throw new ApiError(400, "NameTo is required and must be a string");
+        }
+        if (!data.issuedBy || typeof data.issuedBy !== "string") {
+            throw new ApiError(400, "IssuedBy is required and must be a string");
+        }
+        if (!data.receivedBy || typeof data.receivedBy !== "string") {
+            throw new ApiError(400, "ReceivedBy is required and must be a string");
+        }
+        if (!data.date) {
+            throw new ApiError(400, "Date is required");
+        }
+        if (!data.mobileNumber || !/^[0-9]{11}$/.test(data.mobileNumber)) {
+            throw new ApiError(400, "Mobile number is required and must be a valid 10-digit number");
+        }
+    } else {
+        if (typeof data.purpose !== "undefined" && (typeof data.purpose !== "string" || data.purpose.trim() === "")) {
+            throw new ApiError(400, "Purpose must be a non-empty string");
+        }
+        if (typeof data.type !== "undefined" && (typeof data.type !== "string" || data.type.trim() === "")) {
+            throw new ApiError(400, "Type must be a non-empty string");
+        }
+        if (typeof data.vehicleNumber !== "undefined" && (typeof data.vehicleNumber !== "string" || data.vehicleNumber.trim() === "")) {
+            throw new ApiError(400, "Vehicle number must be a non-empty string");
+        }
+        if (typeof data.nameTo !== "undefined" && (typeof data.nameTo !== "string" || data.nameTo.trim() === "")) {
+            throw new ApiError(400, "NameTo must be a non-empty string");
+        }
+        if (typeof data.issuedBy !== "undefined" && (typeof data.issuedBy !== "string" || data.issuedBy.trim() === "")) {
+            throw new ApiError(400, "IssuedBy must be a non-empty string");
+        }
+        if (typeof data.receivedBy !== "undefined" && (typeof data.receivedBy !== "string" || data.receivedBy.trim() === "")) {
+            throw new ApiError(400, "ReceivedBy must be a non-empty string");
+        }
+        if (typeof data.date !== "undefined") {
+            const dateValue = new Date(data.date as unknown as string);
+            if (Number.isNaN(dateValue.getTime())) {
+                throw new ApiError(400, "Date must be a valid date");
+            }
+        }
+        if (typeof data.mobileNumber !== "undefined" && !/^[0-9]{11}$/.test(data.mobileNumber)) {
+            throw new ApiError(400, "Mobile number must be a valid 10-digit number");
+        }
+    }
 
-    // Optional fields validation
+    if (typeof data.items !== "undefined") {
+        validateItems(data.items as IGatePassInItems[]);
+    } else if (requireAll) {
+        throw new ApiError(400, "Items array cannot be empty");
+    }
+
     if (data.containerNumber && typeof data.containerNumber !== "string") {
         throw new ApiError(400, "Container number must be a string if provided");
     }
 };
 
+
+// Function to validate the gate pass in object
+
+
 export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IGatePassInRequestBody>, res: Response) => {
-    const gatePassInData = req.body;
+    const payload = req.body;
+    validateGatePassInPayload(payload, { requireAll: true });
 
-        validateGatePassIn(gatePassInData);
-    
+    const parsedDate = new Date(payload.date as unknown as string);
+    payload.date = parsedDate as unknown as Date;
 
-    const gatePassIn = new GatePassIn(gatePassInData);
+
+    const gatePassIn = new GatePassIn(payload);
 
         await gatePassIn.save();
         return res
@@ -82,4 +131,94 @@ export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IGatePa
         .json(
             new ApiResponse(201, gatePassIn, "Gate Pass In created successfully")
         );
+});
+
+export const updateGatePassIn = asyncHandler(async (
+    req: Request<{ id: string }, {}, Partial<IGatePassInRequestBody>>,
+    res: Response
+) => {
+    const { id } = req.params;
+    const payload = req.body;
+
+    if(!payload || typeof payload !== "object") {
+        throw new ApiError(400, "Request body is missing");
+    }
+
+    const allowedKeys = [
+        "purpose",
+        "type",
+        "vehicleNumber",
+        "nameTo",
+        "items",
+        "issuedBy",
+        "receivedBy",
+        "date",
+        "mobileNumber",
+        "containerNumber"
+    ];
+
+    const payloadKeys = Object.keys(payload);
+    if (payloadKeys.length === 0) {
+        throw new ApiError(400, "At least one field is required");
+    }
+
+    const invalidKeys = payloadKeys.filter((key) => !allowedKeys.includes(key));
+    if (invalidKeys.length > 0) {
+        throw new ApiError(400, `Invalid field(s): ${invalidKeys.join(", ")}`);
+    }
+
+    validateGatePassInPayload(payload, { requireAll: false });
+
+    if (typeof payload.date !== "undefined") {
+        payload.date = new Date(payload.date) ;
+    }
+
+    const gatePassIn = await GatePassIn.findById(id);
+    if (!gatePassIn) {
+        throw new ApiError(404, "Gate Pass In not found");
+    }
+
+    if (typeof payload.purpose === "string") gatePassIn.purpose = payload.purpose.trim();
+    if (typeof payload.type === "string") gatePassIn.type = payload.type.trim();
+    if (typeof payload.vehicleNumber === "string") gatePassIn.vehicleNumber = payload.vehicleNumber.trim();
+    if (typeof payload.nameTo === "string") gatePassIn.nameTo = payload.nameTo.trim();
+    if (typeof payload.issuedBy === "string") gatePassIn.issuedBy = payload.issuedBy.trim();
+    if (typeof payload.receivedBy === "string") gatePassIn.receivedBy = payload.receivedBy.trim();
+    if (typeof payload.date !== "undefined") gatePassIn.date = new Date(payload.date) ;
+    if (typeof payload.mobileNumber === "string") gatePassIn.mobileNumber = payload.mobileNumber;
+    if (typeof payload.containerNumber === "string" || payload.containerNumber === undefined) {
+        gatePassIn.containerNumber = payload.containerNumber;
+    }
+    if (typeof payload.items !== "undefined") gatePassIn.items = payload.items as IGatePassInItems[];
+
+    await gatePassIn.save();
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, gatePassIn, "Gate Pass In updated successfully"));
+});
+
+export const deleteGatePassIn = asyncHandler(async (
+    req: Request<{ id: string }>,
+    res: Response
+) => {
+    const { id } = req.params;
+
+    const deletedGatePassIn = await GatePassIn.findByIdAndDelete(id);
+
+    if (!deletedGatePassIn) {
+        throw new ApiError(404, "Gate Pass In not found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, deletedGatePassIn, "Gate Pass In deleted successfully"));
+});
+
+export const getAllGatePassIns = asyncHandler(async (_req: Request, res: Response) => {
+    const gatePassIns = await GatePassIn.find().sort({ gatePassInNumber: -1 });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, gatePassIns, "Gate Pass Ins fetched successfully"));
 });
