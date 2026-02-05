@@ -109,7 +109,7 @@ const validateOutwardGatePassPayload = (
 // Function to validate the gate pass in object
 
 
-export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IOutwardGatePassRequestBody>, res: Response) => {
+export const createOutwardGatePass = asyncHandler(async (req: Request<{}, {}, IOutwardGatePassRequestBody>, res: Response) => {
     const payload = req.body;
     validateOutwardGatePassPayload(payload, { requireAll: true });
 
@@ -117,17 +117,17 @@ export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IOutwar
     payload.date = parsedDate as unknown as Date;
 
 
-    const gatePassIn = new OutwardGatePass(payload);
+    const outwardGatePass = new OutwardGatePass(payload);
 
-        await gatePassIn.save();
+        await outwardGatePass.save();
         return res
         .status(201)
         .json(
-            new ApiResponse(201, gatePassIn, "Gate Pass In created successfully")
+            new ApiResponse(201, outwardGatePass, "Gate Pass In created successfully")
         );
 });
 
-export const updateGatePassIn = asyncHandler(async (
+export const updateOutwardGatePass = asyncHandler(async (
     req: Request<{ id: string }, {}, Partial<IOutwardGatePassRequestBody>>,
     res: Response
 ) => {
@@ -166,51 +166,68 @@ export const updateGatePassIn = asyncHandler(async (
         payload.date = new Date(payload.date) ;
     }
 
-    const gatePassIn = await OutwardGatePass.findById(id);
-    if (!gatePassIn) {
+    const outwardGatePass = await OutwardGatePass.findById(id);
+    if (!outwardGatePass) {
         throw new ApiError(404, "Gate Pass In not found");
     }
 
-    if (typeof payload.purpose === "string") gatePassIn.purpose = payload.purpose.trim();
-    if (typeof payload.type === "string") gatePassIn.type = payload.type.trim();
-    if (typeof payload.vehicleNumber === "string") gatePassIn.vehicleNumber = payload.vehicleNumber.trim();
-    if (typeof payload.nameTo === "string") gatePassIn.nameTo = payload.nameTo.trim();
-    if (typeof payload.issuedBy === "string") gatePassIn.issuedBy = payload.issuedBy.trim();
-    if (typeof payload.date !== "undefined") gatePassIn.date = new Date(payload.date) ;
-    if (typeof payload.mobileNumber === "string") gatePassIn.mobileNumber = payload.mobileNumber;
+    if (typeof payload.purpose === "string") outwardGatePass.purpose = payload.purpose.trim();
+    if (typeof payload.type === "string") outwardGatePass.type = payload.type.trim();
+    if (typeof payload.vehicleNumber === "string") outwardGatePass.vehicleNumber = payload.vehicleNumber.trim();
+    if (typeof payload.nameTo === "string") outwardGatePass.nameTo = payload.nameTo.trim();
+    if (typeof payload.issuedBy === "string") outwardGatePass.issuedBy = payload.issuedBy.trim();
+    if (typeof payload.date !== "undefined") outwardGatePass.date = new Date(payload.date) ;
+    if (typeof payload.mobileNumber === "string") outwardGatePass.mobileNumber = payload.mobileNumber;
     if (typeof payload.containerNumber === "string" || payload.containerNumber === undefined) {
-        gatePassIn.containerNumber = payload.containerNumber;
+        outwardGatePass.containerNumber = payload.containerNumber;
     }
-    if (typeof payload.items !== "undefined") gatePassIn.items = payload.items as IOutwardGatePassItems[];
+    if (typeof payload.items !== "undefined") outwardGatePass.items = payload.items as IOutwardGatePassItems[];
 
-    await gatePassIn.save();
+    await outwardGatePass.save();
 
     return res
         .status(200)
-        .json(new ApiResponse(200, gatePassIn, "Gate Pass In updated successfully"));
+        .json(new ApiResponse(200, outwardGatePass, "Gate Pass In updated successfully"));
 });
 
-export const deleteGatePassIn = asyncHandler(async (
+export const deleteOutwardGatePass = asyncHandler(async (
     req: Request<{ id: string }>,
     res: Response
 ) => {
     const { id } = req.params;
 
-    const deletedGatePassIn = await OutwardGatePass.findByIdAndDelete(id);
+    const deletedOutwardGatePass = await OutwardGatePass.findByIdAndDelete(id);
 
-    if (!deletedGatePassIn) {
+    if (!deletedOutwardGatePass) {
         throw new ApiError(404, "Gate Pass In not found");
     }
 
     return res
         .status(200)
-        .json(new ApiResponse(200, deletedGatePassIn, "Gate Pass In deleted successfully"));
+        .json(new ApiResponse(200, deletedOutwardGatePass, "Gate Pass In deleted successfully"));
 });
 
-export const getAllGatePassIns = asyncHandler(async (_req: Request, res: Response) => {
-    const gatePassIns = await OutwardGatePass.find().sort({ OGPNumber : -1 });
+export const getOutwardGatePass = asyncHandler(async (
+    req: Request<{ id: string }>,
+    res: Response
+) => {
+    const { id } = req.params;
+
+    const outwardGatePass = await OutwardGatePass.findById(id);
+
+    if (!outwardGatePass) {
+        throw new ApiError(404, "Gate Pass In not found");
+    }
 
     return res
         .status(200)
-        .json(new ApiResponse(200, gatePassIns, "Gate Pass Ins fetched successfully"));
+        .json(new ApiResponse(200, outwardGatePass, "Gate Pass In fetched successfully"));
+});
+
+export const getAllOutwardGatePasses = asyncHandler(async (_req: Request, res: Response) => {
+    const outwardGatePasses = await OutwardGatePass.find().sort({ OGPNumber : -1 });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, outwardGatePasses, "Gate Pass Ins fetched successfully"));
 });

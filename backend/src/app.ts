@@ -6,7 +6,7 @@ import { errorHandler } from "./middlewares/errorHandler.middleware.js"
 
 // import routes
 import userRouter from "./routes/user.route.js"
-import gatePassInRouter from "./routes/outwardGatePass.route.js"
+import outwardGatePassRouter from "./routes/outwardGatePass.route.js"
 
 dotenv.config({
     path: './.env'
@@ -25,6 +25,6 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 app.use("/api/v1/users", userRouter)
-app.use("/api/v1/outward-gate-pass", gatePassInRouter)
+app.use("/api/v1/outward-gate-pass", outwardGatePassRouter)
 
 app.use(errorHandler)
