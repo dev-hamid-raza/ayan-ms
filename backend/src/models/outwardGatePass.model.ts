@@ -55,6 +55,14 @@ const outwardGatePassSchema = new Schema<IOutwardGatePass>(
             type: String, 
             required: true 
         },
+        purpose: { 
+            type: String, 
+            required: true 
+        },
+        type: { 
+            type: String, 
+            required: true 
+        },
         containerNumber: { type: String },
     },
     { timestamps: true }

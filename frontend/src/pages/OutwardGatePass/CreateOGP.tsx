@@ -6,6 +6,10 @@ import { Label } from '@/components/ui/label'
 import { DatePickerInput } from '@/components/common/PrimaryDatePicker'
 import { IOutwardGatePass, IOutwardGatePassItems } from '@/types/outwardGatePass.types'
 import { toast } from 'sonner'
+import usePostFn from '@/hooks/usePostFn'
+import { createOGP } from '@/services/outwardGatePass'
+import { Spinner } from '@/components/ui/spinner'
+import { useAuth } from '@/contexts/AuthContext'
 
 
 const emptyItem: IOutwardGatePassItems = {
@@ -19,7 +23,9 @@ const emptyItem: IOutwardGatePassItems = {
 
 export default function CreateOGP() {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [errors, setErrors] = useState<{ [key: string]: boolean | { [key: string]: boolean }[] }>({})
+    const { postData, loading } = usePostFn(createOGP)
     
     const [formData, setFormData] = useState<Partial<IOutwardGatePass>>({
         purpose: '',
@@ -27,7 +33,7 @@ export default function CreateOGP() {
         vehicleNumber: '',
         nameTo: '',
         items: [{ ...emptyItem }],
-        issuedBy: '',
+        issuedBy: `${user.firstName} ${user.lastName}`,
         date: new Date(),
         mobileNumber: '',
         containerNumber: ''
@@ -39,9 +45,12 @@ export default function CreateOGP() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
+        const nextValue = name === 'mobileNumber'
+            ? value.replace(/\D/g, '').slice(0, 11)
+            : value
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: nextValue
         }))
     }
 
@@ -71,7 +80,7 @@ export default function CreateOGP() {
         }))
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         
         const newErrors: { [key: string]: boolean | { [key: string]: boolean }[] } = {}
@@ -81,7 +90,7 @@ export default function CreateOGP() {
         if (!formData.type) newErrors.type = true
         if (!formData.vehicleNumber) newErrors.vehicleNumber = true
         if (!formData.nameTo) newErrors.nameTo = true
-        if (!formData.mobileNumber) newErrors.mobileNumber = true
+        if (!formData.mobileNumber || formData.mobileNumber.length !== 11) newErrors.mobileNumber = true
         if (!formData.issuedBy) newErrors.issuedBy = true
         if (!formData.date) newErrors.date = true
         
@@ -143,8 +152,12 @@ export default function CreateOGP() {
             items: filledItems
         }
 
-        console.log('OGP Form Data:', submitData)
-        toast.success("OGP data logged to console. Check browser console.")
+        try {
+            await postData(submitData)
+        } catch (error) {
+            toast.error(error as string)
+        }
+
     }
 
     return (
@@ -262,17 +275,6 @@ export default function CreateOGP() {
                                     onChange={handleChange}
                                     required
                                     aria-invalid={errors.mobileNumber ? 'true' : 'false'}
-                                />
-                            </div>
-                            <div className='space-y-2'>
-                                <Label htmlFor='issuedBy'>Issued By<span className='text-red-500'>*</span></Label>
-                                <Input
-                                    id='issuedBy'
-                                    name='issuedBy'
-                                    value={formData.issuedBy}
-                                    onChange={handleChange}
-                                    required
-                                    aria-invalid={errors.issuedBy ? 'true' : 'false'}
                                 />
                             </div>
                             <div className='space-y-2'>
@@ -395,8 +397,8 @@ export default function CreateOGP() {
                     <Button type='button' variant='outline' onClick={handleBack} className='flex-1'>
                         Cancel
                     </Button>
-                    <Button type='submit' form='createOGPForm' onClick={handleSubmit} className='flex-1'>
-                        Create OGP
+                    <Button type='submit' disabled={loading} form='createOGPForm' onClick={handleSubmit} className='flex-1'>
+                        {loading ? <Spinner /> : "Create OGP"} 
                     </Button>
                 </div>
             </div>

@@ -10,14 +10,13 @@ export interface IOutwardGatePassItems {
 }
 
 export interface IOutwardGatePass {
-    OGPNumber: number;
+    OGPNumber?: number;
     purpose: string;
     type: string;
     vehicleNumber: string;
     nameTo: string;
     items: IOutwardGatePassItems[];
     issuedBy: string;
-    receivedBy: string;
     date: Date;
     mobileNumber: string;
     containerNumber?: string;

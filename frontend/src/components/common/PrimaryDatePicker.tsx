@@ -9,34 +9,13 @@ import {
 } from "@/components/ui/popover"
 import { CalendarIcon } from "lucide-react"
 
-function formatDate(date: Date | undefined) {
-    if (!date) {
-        return ""
-    }
-
-    return date.toLocaleDateString("en-PK", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-    })
-}
-
-function isValidDate(date: Date | undefined) {
-    if (!date) {
-        return false
-    }
-    return !isNaN(date.getTime())
-}
-
 export function DatePickerInput({ date, onDateChange }: { date?: Date; onDateChange?: (date: Date) => void }) {
     const [open, setOpen] = React.useState(false)
     const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(date)
     const [month, setMonth] = React.useState<Date | undefined>(selectedDate)
-    const [value, setValue] = React.useState(formatDate(selectedDate))
 
     const handleDateSelect = (date: Date | undefined) => {
         setSelectedDate(date)
-        setValue(formatDate(date))
         if (date && onDateChange) {
             onDateChange(date)
         }

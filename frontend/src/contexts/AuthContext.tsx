@@ -16,19 +16,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [user, setUser] = useState<IUser>({
 		firstName: '',
 		lastName: '',
-		email: '',
 		username: '',
 		permissions: [],
-		role: ROLES.USER
+		role: ROLES.USER,
+		_id: ""
 	});
 
 	useEffect(() => {
         const checkAuth = async () => {
             try {
                 setLoading(true)
-                console.log(loading)
                 const sessionActive = await checkSession()
-                if(sessionActive.success) {
+                if(sessionActive.success && sessionActive.data) {
                     setIsAuthenticated(true)
                     setUser(sessionActive.data.user)
                 }

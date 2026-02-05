@@ -47,6 +47,6 @@ export interface AuthProviderProps {
 }
 
 
-export type IUserResponse = ApiResponse<null>
+export type IUserResponse = ApiResponse<{ user: IUser }>
 
 export type IUserListResponse = ApiResponse<IUser[]>
