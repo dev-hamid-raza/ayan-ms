@@ -6,6 +6,7 @@ export const ROUTES = {
         IN: 'gate-pass-in',
         OUT: 'outward-gate-pass',
         CREATE_OGP: 'outward-gate-pass/create',
+        VIEW: "outward-gate-pass/:id",
     },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',

@@ -1,6 +1,6 @@
 import { MODULES } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
-import { Bot, SquareTerminal, ShieldUser } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bot, Scissors, ShieldUser, SquareTerminal } from "lucide-react";
 
 export const NAV_ITEM: NavGroup = [
     {
@@ -12,12 +12,14 @@ export const NAV_ITEM: NavGroup = [
             {
                 title: "Gate Pass In",
                 url: "#",
-                permission: MODULES.GATE_PASS_IN
+                permission: MODULES.GATE_PASS_IN,
+                icon: ArrowDownToLine,
             },
             {
                 title: "Gate Pass Out",
                 url: "/outward-gate-pass",
-                permission: MODULES.GATE_PASS_OUT
+                permission: MODULES.GATE_PASS_OUT,
+                icon: ArrowUpFromLine,
             },
         ],
     },
@@ -29,20 +31,15 @@ export const NAV_ITEM: NavGroup = [
             {
                 title: "Stitching Rate",
                 url: "#",
-                permission: MODULES.STITCHING_RATES
+                permission: MODULES.STITCHING_RATES,
+                icon: Scissors,
             },
         ],
     },
     {
         title: "Admin",
-        url: "#",
+        url: "/user-management",
         icon: ShieldUser,
-        items: [
-            {
-                title: "User Management",
-                url: "/user-management",
-                permission: MODULES.ADMIN_PANEL
-            },
-        ],
+        permission: MODULES.ADMIN_PANEL,
     },
 ]

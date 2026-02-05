@@ -11,7 +11,7 @@ export const fetchOGP = async () => {
 
 export const fetchOGPById = async (id: string) => {
     const res = await getApi<{ success: boolean; data: IOutwardGatePass }>({
-        url: `${OGP_API.OGP}/${id}`,
+        url: OGP_API.GET(id),
     })
     return res.data
 }

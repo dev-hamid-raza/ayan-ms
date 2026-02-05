@@ -11,7 +11,11 @@ export function hasPermission(user: IUser, groups: NavGroup) {
 
     return groups
         .map(group => {
-            if (!group.items) return undefined;
+            if (!group.items || group.items.length === 0) {
+                if (!group.permission) return undefined;
+                const allowed = user.permissions.some(p => p.module === group.permission);
+                return allowed ? group : undefined;
+            }
 
             const allowedItems = group.items.filter(subItem =>
                 user.permissions.some(p => p.module === subItem.permission)

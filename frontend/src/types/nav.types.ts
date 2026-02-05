@@ -6,10 +6,12 @@ export interface NavItem {
     url?: string
     icon?: LucideIcon
     isActive?: boolean
+    permission?: MODULES
     items?: {
         title: string
         url: string
         permission: MODULES
+        icon?: LucideIcon
     }[]
 }
 

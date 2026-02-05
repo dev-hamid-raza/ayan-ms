@@ -32,7 +32,7 @@ export function PrimaryTable<TData, TValue>({
     })
 
     return (
-        <div className="overflow-hidden">
+        <div className="overflow-hidden rounded-lg border border-x">
             <Table>
                 <TableHeader className="bg-secondary">
                     {table.getHeaderGroups().map((headerGroup) => (

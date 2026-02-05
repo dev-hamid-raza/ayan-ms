@@ -162,7 +162,7 @@ export default function CreateOGP() {
 
     return (
         <div className='flex flex-col h-screen'>
-            <div className='border-b'>
+            <div className='sticky top-0 z-50 border-b bg-background'>
                 <div className='flex items-center justify-between px-5 h-20'>
                     <div className='flex items-center gap-4'>
                         <Button

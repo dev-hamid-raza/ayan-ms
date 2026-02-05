@@ -6,11 +6,13 @@ import { Eye, Pen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { hasActionPermission } from "@/utils/permission";
 import { ACTIONS, MODULES } from "@/types/user.types";
+import { useNavigate } from "react-router-dom";
 
 export const outwardGatePassColumns = ():ColumnDef<IOutwardGatePass>[] => {
     const { user } = useAuth();
     const canEdit = hasActionPermission(user, MODULES.GATE_PASS_OUT, ACTIONS.UPDATE);
-    
+    const navigate = useNavigate()
+
     return [
     {
         accessorKey: "OGPNumber",
@@ -47,13 +49,13 @@ export const outwardGatePassColumns = ():ColumnDef<IOutwardGatePass>[] => {
     {
         id: "actions",
         header: "Actions",
-        cell: () => (
+        cell: ({row}) => (
             <div className="flex gap-2">
                 <PrimaryTooltip content="View">
                         <Button
                             size="icon-sm"
                             variant="ghost"
-                            // onClick={() => onEdit(row.original)}
+                            onClick={() => navigate(row.original._id)}
                         >
                             <Eye className="w-4 h-4" />
                         </Button>

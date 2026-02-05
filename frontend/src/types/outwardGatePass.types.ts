@@ -10,6 +10,7 @@ export interface IOutwardGatePassItems {
 }
 
 export interface IOutwardGatePass {
+    _id: string;
     OGPNumber?: number;
     purpose: string;
     type: string;
@@ -20,6 +21,8 @@ export interface IOutwardGatePass {
     date: Date;
     mobileNumber: string;
     containerNumber?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export type IOutwardGatePassResponse = ApiResponse<IOutwardGatePass[]>

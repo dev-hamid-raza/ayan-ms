@@ -1,12 +1,13 @@
 import Header from '@/components/common/Header'
 import { userColumns } from '@/components/TableColumns/userColumns'
 import { PrimaryTable } from '@/components/common/PrimaryTable'
+import { SkeletonHeader } from '@/components/common/SkeletonHeader'
+import { SkeletonTable } from '@/components/common/SkeletonTable'
 import { CreateUserSidebar } from '@/components/userManagement/CreateUserSidebar'
 import { UpdatePasswordDialog } from '@/components/userManagement/UpdatePasswordDialog'
 import useFetchFn from '@/hooks/useFetch'
 import { fetchUsers } from '@/services/user'
 import { toast } from 'sonner'
-import { Spinner } from '@/components/ui/spinner'
 import { useState } from 'react'
 import { IUser } from '@/types/user.types'
 
@@ -15,7 +16,7 @@ function UserManagement() {
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
     const [selectedUserForPassword, setSelectedUserForPassword] = useState<IUser | null>(null)
-    const { data, error, loading, refetch } = useFetchFn(fetchUsers)
+    const { data, loading, refetch } = useFetchFn(fetchUsers)
     
     const handleEdit = (user: IUser) => {
         setSelectedUser(user)
@@ -39,20 +40,24 @@ function UserManagement() {
         )
     }
     
-    if (error) {
-        toast.error(error)
-    }
-
     const columns = userColumns(handleEdit, handleDelete, handleUpdatePassword)
 
     return (
         <div>
-            <Header title='User Management' buttonText="Create User" onClick={() => {
-                setSelectedUser(null)
-                setOpen(true)
-            }} />
+            <div className='sticky top-0 z-50 bg-background'>
+                {loading ? (
+                    <SkeletonHeader showButton={true} />
+                ) : (
+                    <Header title='User Management' buttonText="Create User" onClick={() => {
+                        setSelectedUser(null)
+                        setOpen(true)
+                    }} />
+                )}
+            </div>
             <div className='px-5 mt-5'>
-                {loading ? <Spinner /> :
+                {loading ? (
+                    <SkeletonTable rows={8} columns={7} />
+                ) :
                     data?.data &&
                     <PrimaryTable columns={columns} data={data?.data} />
                 }

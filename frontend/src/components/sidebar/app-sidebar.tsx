@@ -6,7 +6,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/AuthContext"
 import { hasPermission } from "@/utils/permission"
@@ -27,6 +29,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <LoadingPage />
       ) : (
         <>
+      <SidebarHeader className="border-b">
+        <div className="flex items-center justify-between px-2 group-data-[collapsible=icon]:justify-center">
+          <h2 className="text-lg font-semibold whitespace-nowrap transition-all duration-200 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:overflow-hidden">Ayan MS</h2>
+          <SidebarTrigger />
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <NavMain items={navData} />
         {/* <NavProjects projects={data.projects} /> */}
