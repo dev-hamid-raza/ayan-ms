@@ -2,9 +2,16 @@ import { IOutwardGatePass } from "@/types/outwardGatePass.types";
 import { ColumnDef } from "@tanstack/react-table";
 import PrimaryTooltip from "../common/PrimaryTooltip";
 import { Button } from "../ui/button";
-import { Pen } from "lucide-react";
+import { Eye, Pen } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasActionPermission } from "@/utils/permission";
+import { ACTIONS, MODULES } from "@/types/user.types";
 
-export const outwardGatePassColumns = ():ColumnDef<IOutwardGatePass>[] => [
+export const outwardGatePassColumns = ():ColumnDef<IOutwardGatePass>[] => {
+    const { user } = useAuth();
+    const canEdit = hasActionPermission(user, MODULES.GATE_PASS_OUT, ACTIONS.UPDATE);
+    
+    return [
     {
         accessorKey: "OGPNumber",
         header: "No."
@@ -40,18 +47,30 @@ export const outwardGatePassColumns = ():ColumnDef<IOutwardGatePass>[] => [
     {
         id: "actions",
         header: "Actions",
-        cell: ({row}) => (
+        cell: () => (
             <div className="flex gap-2">
-                <PrimaryTooltip content="Edit User">
-                    <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        // onClick={() => onEdit(row.original)}
-                    >
-                        <Pen className="w-4 h-4" />
-                    </Button>
-                </PrimaryTooltip>
+                <PrimaryTooltip content="View">
+                        <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            // onClick={() => onEdit(row.original)}
+                        >
+                            <Eye className="w-4 h-4" />
+                        </Button>
+                    </PrimaryTooltip>
+                {canEdit && (
+                    <PrimaryTooltip content="Edit OGP">
+                        <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            // onClick={() => onEdit(row.original)}
+                        >
+                            <Pen className="w-4 h-4" />
+                        </Button>
+                    </PrimaryTooltip>
+                )}
             </div>
         )
     }
-] 
+    ];
+}

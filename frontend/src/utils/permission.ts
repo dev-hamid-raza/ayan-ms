@@ -1,4 +1,5 @@
 import type { IUser } from "@/types/user.types";
+import { ACTIONS, MODULES, ROLES } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
 
 function isDefined<T>(v: T | undefined): v is T {
@@ -19,4 +20,18 @@ export function hasPermission(user: IUser, groups: NavGroup) {
             return allowedItems.length ? { ...group, items: allowedItems } : undefined;
         })
         .filter(isDefined);
+}
+
+export function hasActionPermission(
+    user: IUser,
+    module: MODULES,
+    action: ACTIONS
+): boolean {
+    if (user.role === ROLES.ADMIN) return true;
+
+    return (user.permissions ?? []).some((p) => {
+        if (p.module !== module) return false;
+        const actions = p.actions ?? [];
+        return actions.includes(action);
+    });
 }
