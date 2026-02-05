@@ -61,9 +61,6 @@ const validateOutwardGatePassPayload = (
         if (!data.issuedBy || typeof data.issuedBy !== "string") {
             throw new ApiError(400, "IssuedBy is required and must be a string");
         }
-        if (!data.receivedBy || typeof data.receivedBy !== "string") {
-            throw new ApiError(400, "ReceivedBy is required and must be a string");
-        }
         if (!data.date) {
             throw new ApiError(400, "Date is required");
         }
@@ -85,9 +82,6 @@ const validateOutwardGatePassPayload = (
         }
         if (typeof data.issuedBy !== "undefined" && (typeof data.issuedBy !== "string" || data.issuedBy.trim() === "")) {
             throw new ApiError(400, "IssuedBy must be a non-empty string");
-        }
-        if (typeof data.receivedBy !== "undefined" && (typeof data.receivedBy !== "string" || data.receivedBy.trim() === "")) {
-            throw new ApiError(400, "ReceivedBy must be a non-empty string");
         }
         if (typeof data.date !== "undefined") {
             const dateValue = new Date(data.date as unknown as string);
@@ -151,7 +145,6 @@ export const updateGatePassIn = asyncHandler(async (
         "nameTo",
         "items",
         "issuedBy",
-        "receivedBy",
         "date",
         "mobileNumber",
         "containerNumber"
@@ -183,7 +176,6 @@ export const updateGatePassIn = asyncHandler(async (
     if (typeof payload.vehicleNumber === "string") gatePassIn.vehicleNumber = payload.vehicleNumber.trim();
     if (typeof payload.nameTo === "string") gatePassIn.nameTo = payload.nameTo.trim();
     if (typeof payload.issuedBy === "string") gatePassIn.issuedBy = payload.issuedBy.trim();
-    if (typeof payload.receivedBy === "string") gatePassIn.receivedBy = payload.receivedBy.trim();
     if (typeof payload.date !== "undefined") gatePassIn.date = new Date(payload.date) ;
     if (typeof payload.mobileNumber === "string") gatePassIn.mobileNumber = payload.mobileNumber;
     if (typeof payload.containerNumber === "string" || payload.containerNumber === undefined) {
@@ -216,7 +208,7 @@ export const deleteGatePassIn = asyncHandler(async (
 });
 
 export const getAllGatePassIns = asyncHandler(async (_req: Request, res: Response) => {
-    const gatePassIns = await OutwardGatePass.find().sort({ gatePassInNumber: -1 });
+    const gatePassIns = await OutwardGatePass.find().sort({ OGPNumber : -1 });
 
     return res
         .status(200)

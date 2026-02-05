@@ -17,7 +17,6 @@ export interface IOutwardGatePass extends Document {
     nameTo: string;
     items: IOutwardGatePassItems[];
     issuedBy: string;
-    receivedBy: string;
     date: Date;
     mobileNumber: string;
     containerNumber?: string;

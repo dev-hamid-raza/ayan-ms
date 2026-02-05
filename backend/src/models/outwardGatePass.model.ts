@@ -47,10 +47,6 @@ const outwardGatePassSchema = new Schema<IOutwardGatePass>(
             type: String, 
             required: true 
         },
-        receivedBy: { 
-            type: String, 
-            required: true 
-        },
         date: { 
             type: Date, 
             required: true 
