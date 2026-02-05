@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGatePassIn, deleteGatePassIn, getAllGatePassIns, updateGatePassIn } from "../controllers/gatePassIn.controller";
+import { createGatePassIn, deleteGatePassIn, getAllGatePassIns, updateGatePassIn } from "../controllers/outwardGatePass.controller";
 import { verifyJWT } from "../middlewares/authenticate.middleware";
 import { authorizeModule } from "../middlewares/authorizeModule.middleware";
 import { ACTIONS, MODULES } from "../config/accessControl";

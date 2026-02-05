@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
-import { IGatePassIn, IGatePassInItems } from "../types/gatePassIn.types";
 import { Counter } from "./counter.model";
+import { IOutwardGatePass, IOutwardGatePassItems } from "../types/outwardGatePass.types";
 
-const gatePassInItemsSchema = new Schema<IGatePassInItems>({
+const outwardGatePassItemsSchema = new Schema<IOutwardGatePassItems>({
     description: {
         type: String,
         required: true
@@ -29,9 +29,9 @@ const gatePassInItemsSchema = new Schema<IGatePassInItems>({
     { _id: false }
 );
 
-const gatePassInSchema = new Schema<IGatePassIn>(
+const outwardGatePassSchema = new Schema<IOutwardGatePass>(
     {
-        gatePassInNumber: { 
+        OGPNumber: { 
             type: Number, 
             required: true },
         vehicleNumber: { 
@@ -41,7 +41,7 @@ const gatePassInSchema = new Schema<IGatePassIn>(
             type: String, 
             required: true },
         items: { 
-            type: [gatePassInItemsSchema], 
+            type: [outwardGatePassItemsSchema], 
             required: true },
         issuedBy: { 
             type: String, 
@@ -64,20 +64,20 @@ const gatePassInSchema = new Schema<IGatePassIn>(
     { timestamps: true }
 );
 
-gatePassInSchema.pre('validate', async function (next) {
-    if (!this.isNew || this.gatePassInNumber) return 
+outwardGatePassSchema.pre('validate', async function (next) {
+    if (!this.isNew || this.OGPNumber) return 
 
     try {
         const counter = await Counter.findOneAndUpdate(
-            { modelName: 'GatePassIn' },
+            { modelName: 'outwardGatePass' },
             { $inc: { seq: 1 } },
             { new: true, upsert: true }
         )
 
-        this.gatePassInNumber = counter.seq
+        this.OGPNumber = counter.seq
     } catch (error) {
         throw error
     }
 })
 
-export const GatePassIn = mongoose.model<IGatePassIn>("GatePassIn", gatePassInSchema);
+export const OutwardGatePass = mongoose.model<IOutwardGatePass>("outwardGatePass", outwardGatePassSchema);

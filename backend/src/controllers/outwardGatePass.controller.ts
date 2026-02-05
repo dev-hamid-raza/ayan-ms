@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
-import { IGatePassInRequestBody, IGatePassInItems } from "../types/gatePassIn.types";
+import { IOutwardGatePassRequestBody, IOutwardGatePassItems } from "../types/outwardGatePass.types";
 import { ApiError } from "../utils/ApiError";
-import { GatePassIn } from "../models/gatePassIn.model";
+import { OutwardGatePass } from "../models/outwardGatePass.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
 // Function to validate the items array
-const validateItems = (items: IGatePassInItems[]) => {
+const validateItems = (items: IOutwardGatePassItems[]) => {
     if (!Array.isArray(items) || items.length === 0) {
         throw new ApiError(400, "Items array cannot be empty");
     }
@@ -35,8 +35,8 @@ const validateItems = (items: IGatePassInItems[]) => {
 };
 
 // Function to validate gate pass in payload
-const validateGatePassInPayload = (
-    data: Partial<IGatePassInRequestBody>,
+const validateOutwardGatePassPayload = (
+    data: Partial<IOutwardGatePassRequestBody>,
     options: { requireAll: boolean }
 ) => {
     const { requireAll } = options;
@@ -101,7 +101,7 @@ const validateGatePassInPayload = (
     }
 
     if (typeof data.items !== "undefined") {
-        validateItems(data.items as IGatePassInItems[]);
+        validateItems(data.items as IOutwardGatePassItems[]);
     } else if (requireAll) {
         throw new ApiError(400, "Items array cannot be empty");
     }
@@ -115,15 +115,15 @@ const validateGatePassInPayload = (
 // Function to validate the gate pass in object
 
 
-export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IGatePassInRequestBody>, res: Response) => {
+export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IOutwardGatePassRequestBody>, res: Response) => {
     const payload = req.body;
-    validateGatePassInPayload(payload, { requireAll: true });
+    validateOutwardGatePassPayload(payload, { requireAll: true });
 
     const parsedDate = new Date(payload.date as unknown as string);
     payload.date = parsedDate as unknown as Date;
 
 
-    const gatePassIn = new GatePassIn(payload);
+    const gatePassIn = new OutwardGatePass(payload);
 
         await gatePassIn.save();
         return res
@@ -134,7 +134,7 @@ export const createGatePassIn = asyncHandler(async (req: Request<{}, {}, IGatePa
 });
 
 export const updateGatePassIn = asyncHandler(async (
-    req: Request<{ id: string }, {}, Partial<IGatePassInRequestBody>>,
+    req: Request<{ id: string }, {}, Partial<IOutwardGatePassRequestBody>>,
     res: Response
 ) => {
     const { id } = req.params;
@@ -167,13 +167,13 @@ export const updateGatePassIn = asyncHandler(async (
         throw new ApiError(400, `Invalid field(s): ${invalidKeys.join(", ")}`);
     }
 
-    validateGatePassInPayload(payload, { requireAll: false });
+    validateOutwardGatePassPayload(payload, { requireAll: false });
 
     if (typeof payload.date !== "undefined") {
         payload.date = new Date(payload.date) ;
     }
 
-    const gatePassIn = await GatePassIn.findById(id);
+    const gatePassIn = await OutwardGatePass.findById(id);
     if (!gatePassIn) {
         throw new ApiError(404, "Gate Pass In not found");
     }
@@ -189,7 +189,7 @@ export const updateGatePassIn = asyncHandler(async (
     if (typeof payload.containerNumber === "string" || payload.containerNumber === undefined) {
         gatePassIn.containerNumber = payload.containerNumber;
     }
-    if (typeof payload.items !== "undefined") gatePassIn.items = payload.items as IGatePassInItems[];
+    if (typeof payload.items !== "undefined") gatePassIn.items = payload.items as IOutwardGatePassItems[];
 
     await gatePassIn.save();
 
@@ -204,7 +204,7 @@ export const deleteGatePassIn = asyncHandler(async (
 ) => {
     const { id } = req.params;
 
-    const deletedGatePassIn = await GatePassIn.findByIdAndDelete(id);
+    const deletedGatePassIn = await OutwardGatePass.findByIdAndDelete(id);
 
     if (!deletedGatePassIn) {
         throw new ApiError(404, "Gate Pass In not found");
@@ -216,7 +216,7 @@ export const deleteGatePassIn = asyncHandler(async (
 });
 
 export const getAllGatePassIns = asyncHandler(async (_req: Request, res: Response) => {
-    const gatePassIns = await GatePassIn.find().sort({ gatePassInNumber: -1 });
+    const gatePassIns = await OutwardGatePass.find().sort({ gatePassInNumber: -1 });
 
     return res
         .status(200)

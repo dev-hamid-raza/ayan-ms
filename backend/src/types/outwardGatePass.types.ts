@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IGatePassInItems {
+export interface IOutwardGatePassItems {
     description: string;
     pack: number;
     unit: string;
@@ -9,13 +9,13 @@ export interface IGatePassInItems {
     remarks?: string;
 }
 
-export interface IGatePassIn extends Document {
-    gatePassInNumber: number;
+export interface IOutwardGatePass extends Document {
+    OGPNumber: number;
     purpose: string;
     type: string;
     vehicleNumber: string;
     nameTo: string;
-    items: IGatePassInItems[];
+    items: IOutwardGatePassItems[];
     issuedBy: string;
     receivedBy: string;
     date: Date;
@@ -23,13 +23,13 @@ export interface IGatePassIn extends Document {
     containerNumber?: string;
 }
 
-export interface IGatePassInRequestBody {
+export interface IOutwardGatePassRequestBody {
     gatePassInNumber: number;
     purpose: string;
     type: string;
     vehicleNumber: string;
     nameTo: string;
-    items: IGatePassInItems[];
+    items: IOutwardGatePassItems[];
     issuedBy: string;
     receivedBy: string;
     date: Date;
