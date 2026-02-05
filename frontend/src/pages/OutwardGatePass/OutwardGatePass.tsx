@@ -4,7 +4,6 @@ import { outwardGatePassColumns } from '@/components/TableColumns/outwardGatePas
 import { Spinner } from '@/components/ui/spinner'
 import useFetchFn from '@/hooks/useFetch'
 import { fetchOGP } from '@/services/outwardGatePass'
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function OutwardGatePass() {
