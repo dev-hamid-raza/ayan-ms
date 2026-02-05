@@ -9,7 +9,7 @@ export default function App() {
   const router = createBrowserRouter(routes)
   return (
     <>
-      <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+      <ThemeProvider defaultTheme='system' storageKey='vite-ui-theme'>
         <Toaster position='top-right' richColors />
         <AuthProvider>
             <RouterProvider router={router} />
