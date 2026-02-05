@@ -7,5 +7,5 @@ export const USER_API = {
     REGISTER: `${BASE}/register`,
     USERS: `${BASE}`,
     UPDATE: (id: string) => `${BASE}/${id}`,
-    UPDATE_PASSSWORD: (id: string) => `${BASE}/${id}/password`,
+    UPDATE_PASSWORD: (id: string) => `${BASE}/${id}/password`,
 }

@@ -71,7 +71,7 @@ export const updateUserPasswordByAdmin = async (body: {
 }) => {
     const { id, ...payload } = body
     const res = await postApi<ApiResponse<null>>({
-        url: USER_API.UPDATE_PASSSWORD(id),
+        url: USER_API.UPDATE_PASSWORD(id),
         body: payload
     })
     return res.data

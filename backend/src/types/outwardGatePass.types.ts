@@ -5,7 +5,7 @@ export interface IOutwardGatePassItems {
     pack: number;
     unit: string;
     quantity: number;
-    netWeight: number;
+    netWeight?: number;
     remarks?: string;
 }
 

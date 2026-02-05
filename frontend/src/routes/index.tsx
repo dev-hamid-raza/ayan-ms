@@ -6,7 +6,8 @@ import MainLayout from "../components/layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { MODULES } from "@/types/user.types";
 import UserManagement from "@/pages/UserManagement";
-import OutwardGatePass from "@/pages/OutwardGatePass";
+import OutwardGatePass from "@/pages/OutwardGatePass/OutwardGatePass";
+import CreateOGP from "@/pages/OutwardGatePass/CreateOGP";
 
 export const routes: RouteObject[] = [
   {
@@ -30,6 +31,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute module={MODULES.GATE_PASS_OUT}>
             <OutwardGatePass />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.GATE_PASS.CREATE_OGP,
+        element: (
+          <ProtectedRoute module={MODULES.GATE_PASS_OUT}>
+            <CreateOGP />
           </ProtectedRoute>
       )
       },
