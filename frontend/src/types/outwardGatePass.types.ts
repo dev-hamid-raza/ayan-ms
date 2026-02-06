@@ -37,3 +37,5 @@ export interface IOutwardGatePassCreate {
 }
 
 export type IOutwardGatePassResponse = ApiResponse<IOutwardGatePass[]>
+
+export type IOutwardGatePassCreatedResponse = ApiResponse<IOutwardGatePass>

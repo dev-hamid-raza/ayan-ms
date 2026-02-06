@@ -1,4 +1,4 @@
-import { IOutwardGatePass, IOutwardGatePassCreate, IOutwardGatePassResponse } from "@/types/outwardGatePass.types"
+import { IOutwardGatePass, IOutwardGatePassCreate, IOutwardGatePassCreatedResponse, IOutwardGatePassResponse } from "@/types/outwardGatePass.types"
 import { getApi, postApi } from "./apiClient"
 import { OGP_API } from "@/CONSTANTS/API/OGP"
 
@@ -17,7 +17,7 @@ export const fetchOGPById = async (id: string) => {
 }
 
 export const createOGP = async (data: Partial<IOutwardGatePassCreate>) => {
-    const res = await postApi<IOutwardGatePassResponse>({
+    const res = await postApi<IOutwardGatePassCreatedResponse>({
         url: OGP_API.CREATE,
         body: { ...data},
     })

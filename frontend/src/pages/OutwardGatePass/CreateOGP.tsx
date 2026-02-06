@@ -8,7 +8,7 @@ import { IOutwardGatePass, IOutwardGatePassItems } from '@/types/outwardGatePass
 import { toast } from 'sonner'
 import usePostFn from '@/hooks/usePostFn'
 import { createOGP } from '@/services/outwardGatePass'
-import { Spinner } from '@/components/ui/spinner'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
 
@@ -153,7 +153,11 @@ export default function CreateOGP() {
         }
 
         try {
-            await postData(submitData)
+            const res = await postData(submitData)
+            if(res.success) {
+                toast.success("Outward gate pass created successfully")
+                navigate(`/outward-gate-pass/${res.data._id}`)
+            }
         } catch (error) {
             toast.error(error as string)
         }
@@ -398,7 +402,14 @@ export default function CreateOGP() {
                         Cancel
                     </Button>
                     <Button type='submit' disabled={loading} form='createOGPForm' onClick={handleSubmit} className='flex-1'>
-                        {loading ? <Spinner /> : "Create OGP"} 
+                        {loading ? (
+                            <>
+                                <Loader2 className="animate-spin" />
+                                Creating...
+                            </>
+                        ) : (
+                            'Create OGP'
+                        )}
                     </Button>
                 </div>
             </div>
