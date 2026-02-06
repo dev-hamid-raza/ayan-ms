@@ -11,7 +11,7 @@ export interface IOutwardGatePassItems {
 
 export interface IOutwardGatePass {
     _id: string;
-    OGPNumber?: number;
+    OGPNumber: number;
     purpose: string;
     type: string;
     vehicleNumber: string;
@@ -23,6 +23,17 @@ export interface IOutwardGatePass {
     containerNumber?: string;
     createdAt?: Date;
     updatedAt?: Date;
+}
+export interface IOutwardGatePassCreate {
+    purpose: string;
+    type: string;
+    vehicleNumber: string;
+    nameTo: string;
+    items: IOutwardGatePassItems[];
+    issuedBy: string;
+    date: Date;
+    mobileNumber: string;
+    containerNumber?: string;
 }
 
 export type IOutwardGatePassResponse = ApiResponse<IOutwardGatePass[]>

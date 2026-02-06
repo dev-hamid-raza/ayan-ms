@@ -77,6 +77,18 @@ export const updateUserPasswordByAdmin = async (body: {
     return res.data
 }
 
+export const updateUserPassword = async (body: {
+    oldPassword: string
+    newPassword: string
+
+}) => {
+    const res = await postApi<ApiResponse<null>>({
+        url: USER_API.UPDATE_OWN_PASSWORD,
+        body
+    })
+    return res.data
+}
+
 export const fetchUsers = async () => {
     const res = await getApi<IUserListResponse>({
         url: USER_API.USERS,

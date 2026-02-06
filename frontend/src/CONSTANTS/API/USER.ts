@@ -8,4 +8,5 @@ export const USER_API = {
     USERS: `${BASE}`,
     UPDATE: (id: string) => `${BASE}/${id}`,
     UPDATE_PASSWORD: (id: string) => `${BASE}/${id}/password`,
+    UPDATE_OWN_PASSWORD: `${BASE}/me/password`,
 }
