@@ -2,7 +2,7 @@ import { IUser, IPermission, ROLES } from "@/types/user.types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { formatModuleName } from "@/utils/text"
 import { Badge } from "../ui/badge"
-import { Key, Lock, Pen, RotateCw, Trash } from "lucide-react"
+import { Key, Pen, Trash2 } from "lucide-react"
 import { Button } from "../ui/button"
 import PrimaryTooltip from "../common/PrimaryTooltip"
 
@@ -105,7 +105,7 @@ export const userColumns = (
 
                 <PrimaryTooltip content="Delete User">
                     <Button size="icon-sm" variant="ghost" onClick={() => onDelete(row.original)}>
-                        <Trash className="w-4 h-4 text-destructive" />
+                        <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
                 </PrimaryTooltip>
             </div>

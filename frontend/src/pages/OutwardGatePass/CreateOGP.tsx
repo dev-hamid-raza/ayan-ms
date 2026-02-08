@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,9 +7,13 @@ import { DatePickerInput } from '@/components/common/PrimaryDatePicker'
 import { IOutwardGatePass, IOutwardGatePassItems } from '@/types/outwardGatePass.types'
 import { toast } from 'sonner'
 import usePostFn from '@/hooks/usePostFn'
-import { createOGP } from '@/services/outwardGatePass'
+import useFetchFn from '@/hooks/useFetch'
+import { createOGP, fetchOGPById, updateOGP } from '@/services/outwardGatePass'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { ROUTES } from '@/CONSTANTS/ROUTES'
+import CreateOGPSkeleton from '@/components/common/CreateOGPSkeleton'
+import ArrowLeftIcon from '@/assets/icons/ArrowLeftIcon'
 
 
 const emptyItem: IOutwardGatePassItems = {
@@ -23,9 +27,22 @@ const emptyItem: IOutwardGatePassItems = {
 
 export default function CreateOGP() {
     const navigate = useNavigate()
+    const { id } = useParams()
     const { user } = useAuth()
     const [errors, setErrors] = useState<{ [key: string]: boolean | { [key: string]: boolean }[] }>({})
-    const { postData, loading } = usePostFn(createOGP)
+    const isEditMode = useMemo(() => Boolean(id), [id])
+    const { postData: postCreateData, loading: creating } = usePostFn(createOGP)
+    const { postData: postUpdateData, loading: updating } = usePostFn(updateOGP)
+    const { data: ogpResponse, loading: ogpLoading, error: ogpError } = useFetchFn(
+        () => {
+            if (!id) {
+                return Promise.resolve({ success: true, data: null } as { success: boolean; data: IOutwardGatePass | null })
+            }
+            return fetchOGPById(id)
+        },
+        undefined,
+        [id]
+    )
     
     const [formData, setFormData] = useState<Partial<IOutwardGatePass>>({
         purpose: '',
@@ -38,6 +55,52 @@ export default function CreateOGP() {
         mobileNumber: '',
         containerNumber: ''
     })
+
+    useEffect(() => {
+        if (!isEditMode) {
+            return
+        }
+
+        if (ogpError) {
+            toast.error(ogpError)
+            return
+        }
+
+        const ogp = ogpResponse?.data
+        if (!ogp) {
+            return
+        }
+
+        const sanitizedItems = ogp.items?.map(item => ({
+            ...emptyItem,
+            ...item,
+        })) || [{ ...emptyItem }]
+
+        const lastItem = sanitizedItems[sanitizedItems.length - 1]
+        const isLastItemComplete = lastItem &&
+            lastItem.description &&
+            lastItem.pack > 0 &&
+            lastItem.unit &&
+            lastItem.quantity > 0
+
+        const nextItems = isLastItemComplete && sanitizedItems.length < 12
+            ? [...sanitizedItems, { ...emptyItem }]
+            : sanitizedItems
+
+        setFormData({
+            _id: ogp._id,
+            OGPNumber: ogp.OGPNumber,
+            purpose: ogp.purpose || '',
+            type: ogp.type || '',
+            vehicleNumber: ogp.vehicleNumber || '',
+            nameTo: ogp.nameTo || '',
+            items: nextItems,
+            issuedBy: ogp.issuedBy || `${user.firstName} ${user.lastName}`,
+            date: ogp.date ? new Date(ogp.date) : new Date(),
+            mobileNumber: ogp.mobileNumber || '',
+            containerNumber: ogp.containerNumber || ''
+        })
+    }, [isEditMode, ogpError, ogpResponse, user.firstName, user.lastName])
 
     const handleBack = () => {
         navigate(-1)
@@ -147,22 +210,33 @@ export default function CreateOGP() {
         
         setErrors({})
 
+        const { _id, OGPNumber, ...restFormData } = formData
         const submitData = {
-            ...formData,
+            ...restFormData,
             items: filledItems
         }
 
         try {
-            const res = await postData(submitData)
+            const res = isEditMode && id
+                ? await postUpdateData({ id, data: submitData })
+                : await postCreateData(submitData)
+
             if(res.success) {
-                toast.success("Outward gate pass created successfully")
-                navigate(`/outward-gate-pass/${res.data._id}`)
+                toast.success(isEditMode ? "Outward gate pass updated successfully" : "Outward gate pass created successfully")
+                navigate(`/${ROUTES.GATE_PASS.VIEW.replace(":id", res.data._id)}`)
             }
         } catch (error) {
             toast.error(error as string)
         }
 
     }
+
+    if (isEditMode && ogpLoading) {
+        return <CreateOGPSkeleton />
+    }
+
+    const isSubmitting = creating || updating
+    const ogpNumber = ogpResponse?.data?.OGPNumber ?? formData.OGPNumber
 
     return (
         <div className='flex flex-col h-screen'>
@@ -175,11 +249,16 @@ export default function CreateOGP() {
                             onClick={handleBack}
                             className="hover:bg-secondary"
                         >
-                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                            <ArrowLeftIcon className='h-5 w-5' />
                         </Button>
-                        <h1 className='text-3xl font-semibold'>Create OGP</h1>
+                        <div>
+                            <h1 className='text-3xl font-semibold'>
+                                {isEditMode ? 'Edit OGP' : 'Create OGP'}
+                            </h1>
+                            {isEditMode && ogpNumber && (
+                                <p className='text-sm text-muted-foreground'>OGP #{ogpNumber}</p>
+                            )}
+                        </div>
                     </div>
                     
                     {/* Summary in Header */}
@@ -401,14 +480,14 @@ export default function CreateOGP() {
                     <Button type='button' variant='outline' onClick={handleBack} className='flex-1'>
                         Cancel
                     </Button>
-                    <Button type='submit' disabled={loading} form='createOGPForm' onClick={handleSubmit} className='flex-1'>
-                        {loading ? (
+                    <Button type='submit' disabled={isSubmitting} form='createOGPForm' onClick={handleSubmit} className='flex-1'>
+                        {isSubmitting ? (
                             <>
                                 <Loader2 className="animate-spin" />
-                                Creating...
+                                {isEditMode ? 'Updating...' : 'Creating...'}
                             </>
                         ) : (
-                            'Create OGP'
+                            isEditMode ? 'Update OGP' : 'Create OGP'
                         )}
                     </Button>
                 </div>

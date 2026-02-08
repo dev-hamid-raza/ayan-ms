@@ -49,6 +49,14 @@ export const routes: RouteObject[] = [
       )
       },
       {
+        path: ROUTES.GATE_PASS.EDIT,
+        element: (
+          <ProtectedRoute module={MODULES.GATE_PASS_OUT} action={ACTIONS.UPDATE}>
+            <CreateOGP />
+          </ProtectedRoute>
+      )
+      },
+      {
         path: ROUTES.GATE_PASS.VIEW,
         element: (
           <ProtectedRoute module={MODULES.GATE_PASS_OUT} action={ACTIONS.READ}>

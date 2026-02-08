@@ -6,14 +6,15 @@ import { outwardGatePassColumns } from '@/components/TableColumns/outwardGatePas
 import useFetchFn from '@/hooks/useFetch'
 import { fetchOGP } from '@/services/outwardGatePass'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '@/CONSTANTS/ROUTES'
 
 function OutwardGatePass() {
   const navigate = useNavigate()
-  const { data, loading } = useFetchFn(fetchOGP)
+  const { data, loading, refetch } = useFetchFn(fetchOGP)
 
-  const columns = outwardGatePassColumns()
+  const columns = outwardGatePassColumns({ onDeleted: () => refetch() })
   const handleClick = () => {
-    navigate("create")
+    navigate(`/${ROUTES.GATE_PASS.CREATE_OGP}`)
   }
   return (
     <div>

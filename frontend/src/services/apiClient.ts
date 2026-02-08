@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios"
 import { axiosInstance } from "./axiosInstance"
-import type { GetApiResponse, PostApiParams } from "@/types/api.types"
+import type { DeleteApiParams, GetApiResponse, PostApiParams } from "@/types/api.types"
 
 
 
@@ -23,6 +23,17 @@ export const postApi = <T>({
     options = {}
 }: PostApiParams): Promise<AxiosResponse<T>> => {
     return axiosInstance.post<T>(url,body,{
+        data,
+        ...options
+    })
+}
+
+export const deleteApi = <T>({
+    url,
+    data = {},
+    options = {}
+}: DeleteApiParams): Promise<AxiosResponse<T>> => {
+    return axiosInstance.delete<T>(url, {
         data,
         ...options
     })

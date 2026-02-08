@@ -7,6 +7,12 @@ export interface PostApiParams {
     options?: AxiosRequestConfig;
 }
 
+export interface DeleteApiParams {
+    url: string;
+    data?: Record<string, unknown>;
+    options?: AxiosRequestConfig;
+}
+
 export type RequestOptions = {
     params?: Record<string, string | number | boolean>
 }
