@@ -79,39 +79,48 @@ export const outwardGatePassColumns = (options: OutwardGatePassColumnsOptions = 
     return [
     {
         accessorKey: "OGPNumber",
-        header: "No."
+        header: "No.",
+        size: 70,
     },
     {
         accessorFn: (row) => new Date(row.date).toLocaleDateString("en-PK", { day: "2-digit", month: "long", year: "numeric" }),
-        header: "Date"
+        header: "Date",
+        size: 150,
     },
     {
         accessorKey: "nameTo",
-        header: "Name (To)"
+        header: "Name (To)",
+        size: 170,
     },
     {
         accessorKey: "mobileNumber",
-        header: "Mobile No."
+        header: "Mobile No.",
+        size: 130,
     },
     {
         accessorKey: "vehicleNumber",
-        header: "Vehicle No."
+        header: "Vehicle No.",
+        size: 130,
     },
     {
         accessorKey: "purpose",
-        header: "Purpose"
+        header: "Purpose",
+        size: 150,
     },
     {
         accessorKey: "type",
-        header: "Type"
+        header: "Type",
+        size: 110,
     },
     {
         accessorKey: "issuedBy",
-        header: "Prepared by"
+        header: "Prepared by",
+        size: 150,
     },
     {
         id: "actions",
         header: "Actions",
+        size: 120,
         cell: ({row}) => (
             <div className="flex gap-2">
                 <PrimaryTooltip content="View">

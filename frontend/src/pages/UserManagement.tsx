@@ -43,7 +43,7 @@ function UserManagement() {
     const columns = userColumns(handleEdit, handleDelete, handleUpdatePassword)
 
     return (
-        <div>
+        <div className='flex flex-col h-screen'>
             <div className='sticky top-0 z-50 bg-background'>
                 {loading ? (
                     <SkeletonHeader showButton={true} />
@@ -54,13 +54,16 @@ function UserManagement() {
                     }} />
                 )}
             </div>
-            <div className='px-5 mt-5'>
+            <div className='flex-1 min-h-0 px-5 pt-5 pb-5'>
                 {loading ? (
-                    <SkeletonTable rows={8} columns={7} />
-                ) :
-                    data?.data &&
-                    <PrimaryTable columns={columns} data={data?.data} />
-                }
+                    <SkeletonTable rows={15} columns={7} />
+                ) : (
+                    data?.data && (
+                        <div className='h-full'>
+                            <PrimaryTable columns={columns} data={data?.data} />
+                        </div>
+                    )
+                )}
             </div>
             <CreateUserSidebar open={open} onOpen={setOpen} selectedUser={selectedUser} onSuccess={refetch} />
             <UpdatePasswordDialog 

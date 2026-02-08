@@ -1,4 +1,4 @@
-import { IUser, IPermission, ROLES } from "@/types/user.types"
+import { IUser, IPermission, ROLES, ACTIONS } from "@/types/user.types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { formatModuleName } from "@/utils/text"
 import { Badge } from "../ui/badge"
@@ -22,6 +22,20 @@ const PermissionCell = ({
     permissions: IPermission[]
     role: ROLES
 }) => {
+    const actionVariantMap: Record<ACTIONS, "success" | "info" | "warning" | "danger"> = {
+        [ACTIONS.CREATE]: "success",
+        [ACTIONS.READ]: "info",
+        [ACTIONS.UPDATE]: "warning",
+        [ACTIONS.DELETE]: "danger",
+    }
+
+    const actionLabelMap: Record<ACTIONS, string> = {
+        [ACTIONS.CREATE]: "C",
+        [ACTIONS.READ]: "R",
+        [ACTIONS.UPDATE]: "U",
+        [ACTIONS.DELETE]: "D",
+    }
+
     // For admin with no permissions array, show full access
     if (role === ROLES.ADMIN && (!permissions || permissions.length === 0)) {
         return (
@@ -37,12 +51,16 @@ const PermissionCell = ({
                 permissions.map((perm, index) => (
                     <Badge
                         key={index}
-                        variant={"info"}
+                        variant={"secondary"}
                     >
                         <span className="font-semibold">{formatModuleName(perm.module || "")}</span>
                         {perm.actions && perm.actions.length > 0 && (
-                            <span className="ml-1 text-blue-600">
-                                ({perm.actions.join(", ")})
+                            <span className="ml-2 flex flex-wrap gap-1">
+                                {perm.actions.map((action) => (
+                                    <Badge key={action} variant={actionVariantMap[action]}>
+                                        {actionLabelMap[action]}
+                                    </Badge>
+                                ))}
                             </span>
                         )}
                     </Badge>
@@ -62,19 +80,23 @@ export const userColumns = (
     {
         accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         header: "Full Name",
+        size: 180,
     },
     {
         accessorKey: "username",
         header: "Username",
+        size: 140,
     },
     {
         accessorKey: "role",
         header: "Role",
-        cell: ({ getValue }) => <span className="capitalize">{String(getValue())}</span>
+        cell: ({ getValue }) => <span className="capitalize">{String(getValue())}</span>,
+        size: 110,
     },
     {
         accessorKey: "permissions",
         header: "Permissions",
+        size: 420,
         cell: ({ row }) => (
             <PermissionCell
                 permissions={row.getValue("permissions")}
@@ -85,6 +107,7 @@ export const userColumns = (
     {
         id: "actions",
         header: "Actions",
+        size: 140,
         cell: ({ row }) => (
             <div className="flex gap-2">
                 <PrimaryTooltip content="Edit User">

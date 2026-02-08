@@ -15,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -32,14 +33,19 @@ export function PrimaryTable<TData, TValue>({
     })
 
     return (
-        <div className="overflow-hidden rounded-lg border border-x">
-            <Table>
-                <TableHeader className="bg-secondary">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <TableHead key={header.id}>
+        <div className="flex h-full flex-col overflow-hidden rounded-lg border border-x">
+            <div className="shrink-0 border-b bg-secondary">
+                <Table className="table-fixed w-full">
+                    <colgroup>
+                        {table.getAllLeafColumns().map((column) => (
+                            <col key={column.id} style={{ width: column.getSize() }} />
+                        ))}
+                    </colgroup>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id} className="whitespace-nowrap">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -47,34 +53,43 @@ export function PrimaryTable<TData, TValue>({
                                                 header.getContext()
                                             )}
                                     </TableHead>
-                                )
-                            })}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
-                            <TableRow
-                                key={row.id}
-                                data-state={row.getIsSelected() && "selected"}
-                            >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
                                 ))}
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+                        ))}
+                    </TableHeader>
+                </Table>
+            </div>
+            <ScrollArea className="min-h-0 flex-1">
+                <Table className="table-fixed w-full">
+                    <colgroup>
+                        {table.getAllLeafColumns().map((column) => (
+                            <col key={column.id} style={{ width: column.getSize() }} />
+                        ))}
+                    </colgroup>
+                    <TableBody className="[&_tr:last-child]:border-b">
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id} className="whitespace-normal">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </ScrollArea>
         </div>
     )
 }
