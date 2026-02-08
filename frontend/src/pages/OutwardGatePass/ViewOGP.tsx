@@ -1,15 +1,33 @@
-import Header from '@/components/common/Header'
 import useFetchFn from '@/hooks/useFetch'
 import { fetchOGPById } from '@/services/outwardGatePass'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft, Printer } from 'lucide-react'
+import { useMemo } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
 
 function ViewOGP() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user } = useAuth()
     const { data, loading } = useFetchFn(() => fetchOGPById(id!), undefined, [id])
     
     const ogp = data?.data
+
+    const totals = useMemo(() => {
+        const items = ogp?.items ?? []
+        return {
+            pack: items.reduce((sum, item) => sum + item.pack, 0),
+            quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+            netWeight: items.reduce((sum, item) => sum + (item.netWeight || 0), 0),
+        }
+    }, [ogp?.items])
+
+    const handlePrint = () => {
+        window.print()
+    }
+
 
     if (loading) {
         return (
@@ -111,15 +129,30 @@ function ViewOGP() {
 
     return (
         <div>
-            <div className='sticky top-0 z-50 bg-background'>
-                <Header 
-                    title="Outward Gate Pass Details"
-                    showBackButton
-                    onBack={() => navigate(-1)}
-                />
-            </div>
-            
-            <div className="p-6 space-y-6 bg-background min-h-screen">
+            <div className='screen-area'>
+                <div className='sticky top-0 z-50 bg-background'>
+                    <div className='border-b h-20 flex items-center justify-between px-5'>
+                        <div className='flex items-center gap-4'>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => navigate("/outward-gate-pass")}
+                                className="hover:bg-secondary"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </Button>
+                            <h1 className='text-3xl font-semibold'>Outward Gate Pass Details</h1>
+                        </div>
+                        <div className='flex gap-3'>
+                            <Button onClick={handlePrint}>
+                                <Printer className="h-4 w-4" />
+                                Print
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="p-6 space-y-6 bg-background min-h-screen">
                 {/* Header Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-card rounded-lg border border-border p-6">
@@ -177,11 +210,13 @@ function ViewOGP() {
 
                 {/* Issued By */}
                 <div className="bg-card rounded-lg border border-border p-6">
-                    <h3 className="text-base font-semibold mb-4 text-foreground">Prepared By</h3>
+                    <h3 className="text-base font-semibold mb-4 text-foreground">Printed By</h3>
                     <div className="space-y-3">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Name:</span>
-                            <span className="font-semibold text-foreground">{ogp?.issuedBy}</span>
+                            <span className="font-semibold text-foreground">
+                                {user ? `${user.firstName} ${user.lastName}` : '-'}
+                            </span>
                         </div>
                         {ogp?.createdAt && (
                             <>
@@ -239,14 +274,14 @@ function ViewOGP() {
                                 <tr className="border-t-2 border-border bg-secondary">
                                     <td className="py-3 px-4 text-secondary-foreground font-semibold">Total</td>
                                     <td className="text-center py-3 px-4 text-secondary-foreground font-semibold">
-                                        {ogp?.items?.reduce((sum, item) => sum + item.pack, 0)}
+                                        {totals.pack}
                                     </td>
                                     <td className="text-center py-3 px-4 text-secondary-foreground"></td>
                                     <td className="text-center py-3 px-4 text-secondary-foreground font-semibold">
-                                        {ogp?.items?.reduce((sum, item) => sum + item.quantity, 0)}
+                                        {totals.quantity}
                                     </td>
                                     <td className="text-center py-3 px-4 text-secondary-foreground font-semibold">
-                                        {ogp?.items?.reduce((sum, item) => sum + (item.netWeight || 0), 0)}
+                                        {totals.netWeight}
                                     </td>
                                     <td className="py-3 px-4 text-secondary-foreground"></td>
                                 </tr>
@@ -255,6 +290,116 @@ function ViewOGP() {
                     </div>
                 </div>
             </div>
+            </div>
+
+            <div className="print-area">
+                {[0, 1].map((copyIndex) => (
+                    <div key={copyIndex} className="print-copy">
+                        <div className="print-header">
+                            <div className="print-brand">
+                                <div className="print-logo">ayan fabrics</div>
+                                <div className="print-title">OUTWARD GATE PASS</div>
+                            </div>
+                            <div className="print-meta">
+                                <div>Printed: {new Date().toLocaleString('en-PK')}</div>
+                            </div>
+                        </div>
+
+                        <div className="print-info">
+                            <div className="print-block">
+                                <div><span>Purpose:</span> {ogp?.purpose}</div>
+                                <div><span>Date:</span> {ogp?.date ? new Date(ogp.date).toLocaleDateString('en-PK', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}</div>
+                                <div><span>Name (To):</span> {ogp?.nameTo}</div>
+                                <div><span>Mobile:</span> {ogp?.mobileNumber}</div>
+                                <div><span>Vehicle:</span> {ogp?.vehicleNumber}</div>
+                            </div>
+                            <div className="print-block">
+                                <div><span>Type:</span> {ogp?.type}</div>
+                                <div><span>Gate Pass #:</span> {ogp?.OGPNumber}</div>
+                                <div><span>Container #:</span> {ogp?.containerNumber || '-'}</div>
+                            </div>
+                        </div>
+
+                        <table className="print-table">
+                            <thead>
+                                <tr>
+                                    <th>SR#</th>
+                                    <th>Description</th>
+                                    <th>Pack</th>
+                                    <th>UOM</th>
+                                    <th>Qty</th>
+                                    <th>Net Weight</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ogp?.items?.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{item.description}</td>
+                                        <td>{item.pack}</td>
+                                        <td>{item.unit}</td>
+                                        <td>{item.quantity}</td>
+                                        <td>{item.netWeight ?? '-'}</td>
+                                        <td>{item.remarks || '-'}</td>
+                                    </tr>
+                                ))}
+                                <tr className="print-total">
+                                    <td colSpan={2}>TOTAL</td>
+                                    <td>{totals.pack}</td>
+                                    <td></td>
+                                    <td>{totals.quantity}</td>
+                                    <td>{totals.netWeight}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div className="print-signature">
+                            <div>
+                                <div className="print-line"></div>
+                                <div>Prepared By</div>
+                            </div>
+                            <div>
+                                <div className="print-line"></div>
+                                <div>Received By</div>
+                            </div>
+                            <div>
+                                <div className="print-line"></div>
+                                <div>Approved By</div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <style>{`
+                .print-area { display: none; }
+                @media print {
+                    @page { size: A4; margin: 0; }
+                    body { margin: 0; }
+                    .screen-area { display: none !important; }
+                    .print-area { display: block !important; }
+                    .print-copy { page-break-inside: avoid; page-break-after: avoid; }
+                    .print-copy + .print-copy { border-top: 1px dashed #999; }
+                    .print-copy { height: calc(297mm / 2); padding: 12mm 10mm; box-sizing: border-box; }
+                    .print-header { display: flex; justify-content: space-between; align-items: center; }
+                    .print-brand { display: flex; flex-direction: column; gap: 4px; }
+                    .print-logo { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; text-transform: lowercase; }
+                    .print-title { font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+                    .print-meta { font-size: 11px; }
+                    .print-info { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; font-size: 11px; }
+                    .print-block span { font-weight: 600; margin-right: 6px; }
+                    .print-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
+                    .print-table th, .print-table td { border: 1px solid #333; padding: 3px 5px; line-height: 1.2; }
+                    .print-table th { background: #f0f0f0; text-transform: uppercase; font-size: 9px; }
+                    .print-total td { font-weight: 700; background: #f5f5f5; }
+                    .print-signature { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11px; }
+                    .print-line { width: 160px; border-bottom: 1px solid #333; margin-bottom: 4px; }
+                    .print-area, .print-copy, .print-table { color: #111; }
+                    .print-area { position: absolute; left: 0; top: 0; width: 210mm; }
+                }
+            `}</style>
         </div>
     )
 }
