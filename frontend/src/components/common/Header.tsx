@@ -1,15 +1,26 @@
+import { ReactNode } from "react"
 import { Button } from "../ui/button"
 import { ChevronLeft } from "lucide-react"
 
 interface HeaderProps {
     title: string
     buttonText?: string
+    buttonIcon?: ReactNode
     onClick?: () => void
+    showButton?: boolean
     showBackButton?: boolean
     onBack?: () => void
 }
 
-function Header({ title, buttonText, onClick, showBackButton = false, onBack }: HeaderProps) {
+function Header({
+    title,
+    buttonText,
+    buttonIcon,
+    onClick,
+    showButton = true,
+    showBackButton = false,
+    onBack,
+}: HeaderProps) {
     return (
         <div className='border-b h-20 flex items-center justify-between px-5'>
             <div className='flex items-center gap-4'>
@@ -25,9 +36,12 @@ function Header({ title, buttonText, onClick, showBackButton = false, onBack }: 
                 )}
                 <h1 className='text-3xl font-semibold'>{title}</h1>
             </div>
-            {buttonText &&
-                <Button onClick={onClick}>{buttonText}</Button>
-            }
+            {showButton && (buttonText || buttonIcon) && (
+                <Button onClick={onClick}>
+                    {buttonIcon}
+                    {buttonText}
+                </Button>
+            )}
         </div>
     )
 }

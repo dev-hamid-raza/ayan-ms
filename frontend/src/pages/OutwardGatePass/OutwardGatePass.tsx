@@ -7,10 +7,16 @@ import useFetchFn from '@/hooks/useFetch'
 import { fetchOGP } from '@/services/outwardGatePass'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/CONSTANTS/ROUTES'
+import { Plus } from 'lucide-react'
+import { hasActionPermission } from '@/utils/permission'
+import { useAuth } from '@/contexts/AuthContext'
+import { ACTIONS, MODULES } from '@/types/user.types'
 
 function OutwardGatePass() {
   const navigate = useNavigate()
   const { data, loading, refetch } = useFetchFn(fetchOGP)
+  const { user } = useAuth()
+  const canCreate = hasActionPermission(user, MODULES.GATE_PASS_OUT, ACTIONS.CREATE)
 
   const columns = outwardGatePassColumns({ onDeleted: () => refetch() })
   const handleClick = () => {
@@ -22,7 +28,13 @@ function OutwardGatePass() {
         {loading ? (
           <SkeletonHeader showButton={true} />
         ) : (
-          <Header title='Outward Gate Pass' buttonText='Create OGP' onClick={handleClick} />
+          <Header
+            title='Outward Gate Pass'
+            buttonText='Create OGP'
+            buttonIcon={<Plus className='h-4 w-4' />}
+            showButton={canCreate}
+            onClick={handleClick}
+          />
         )}
       </div>
       <div className='flex-1 min-h-0 px-5 pt-5 pb-5'>

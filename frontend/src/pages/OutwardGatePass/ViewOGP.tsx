@@ -14,6 +14,20 @@ function ViewOGP() {
     const { data, loading } = useFetchFn(() => fetchOGPById(id!), undefined, [id])
     
     const ogp = data?.data
+    const printRowCount = 12
+    const printItems = useMemo(() => {
+        const items = ogp?.items ?? []
+        if (items.length >= printRowCount) return items
+        const emptyRows = Array.from({ length: printRowCount - items.length }, () => ({
+            description: "",
+            pack: 0,
+            unit: "",
+            quantity: 0,
+            netWeight: 0,
+            remarks: "",
+        }))
+        return [...items, ...emptyRows]
+    }, [ogp?.items])
 
     const totals = useMemo(() => {
         const items = ogp?.items ?? []
@@ -295,27 +309,27 @@ function ViewOGP() {
             <div className="print-area">
                 {[0, 1].map((copyIndex) => (
                     <div key={copyIndex} className="print-copy">
+                                <div className="print-title text-center">OUTWARD GATE PASS</div>
                         <div className="print-header">
                             <div className="print-brand">
-                                <div className="print-logo">ayan fabrics</div>
-                                <div className="print-title">OUTWARD GATE PASS</div>
+                                <div className="print-logo"><img src='/logo.svg' className='w-[60px]' /></div>
                             </div>
                             <div className="print-meta">
-                                <div>Printed: {new Date().toLocaleString('en-PK')}</div>
+                                <div>Printed: {new Date().toLocaleString('en-PK')} | {user.firstName} {user.lastName}</div>
                             </div>
                         </div>
 
                         <div className="print-info">
                             <div className="print-block">
+                                <div><span>Gate Pass #:</span> {ogp?.OGPNumber}</div>
                                 <div><span>Purpose:</span> {ogp?.purpose}</div>
-                                <div><span>Date:</span> {ogp?.date ? new Date(ogp.date).toLocaleDateString('en-PK', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}</div>
                                 <div><span>Name (To):</span> {ogp?.nameTo}</div>
-                                <div><span>Mobile:</span> {ogp?.mobileNumber}</div>
                                 <div><span>Vehicle:</span> {ogp?.vehicleNumber}</div>
                             </div>
                             <div className="print-block">
+                                <div><span>Date:</span> {ogp?.date ? new Date(ogp.date).toLocaleDateString('en-PK', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}</div>
                                 <div><span>Type:</span> {ogp?.type}</div>
-                                <div><span>Gate Pass #:</span> {ogp?.OGPNumber}</div>
+                                <div><span>Mobile:</span> {ogp?.mobileNumber}</div>
                                 <div><span>Container #:</span> {ogp?.containerNumber || '-'}</div>
                             </div>
                         </div>
@@ -333,23 +347,23 @@ function ViewOGP() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {ogp?.items?.map((item, index) => (
+                                {printItems.map((item, index) => (
                                     <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.description}</td>
-                                        <td>{item.pack}</td>
-                                        <td>{item.unit}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>{item.netWeight ?? '-'}</td>
-                                        <td>{item.remarks || '-'}</td>
+                                        <td className='text-center'>{index + 1}</td>
+                                        <td>{item.description || ''}</td>
+                                        <td className='text-center'>{item.pack || ''}</td>
+                                        <td className='text-center'>{item.unit || ''}</td>
+                                        <td className='text-center'>{item.quantity || ''}</td>
+                                        <td className='text-center'>{item.netWeight || ''}</td>
+                                        <td>{item.remarks || ''}</td>
                                     </tr>
                                 ))}
                                 <tr className="print-total">
                                     <td colSpan={2}>TOTAL</td>
-                                    <td>{totals.pack}</td>
+                                    <td className='text-center'>{totals.pack}</td>
                                     <td></td>
-                                    <td>{totals.quantity}</td>
-                                    <td>{totals.netWeight}</td>
+                                    <td className='text-center'>{totals.quantity}</td>
+                                    <td className='text-center'>{totals.netWeight}</td>
                                     <td></td>
                                 </tr>
                             </tbody>
