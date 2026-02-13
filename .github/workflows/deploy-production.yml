@@ -16,3 +16,44 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: production  # Explicitly checkout the 'production' branch
+
+      # Step 2: Verify current branch
+      - name: Verify Current Branch
+        run: |
+          git branch -a
+          git status
+
+      # Step 3: Install backend dependencies
+      - name: Install backend deps
+        run: |
+          cd D:\apps\ayan-ms\backend
+          npm install
+
+      # Step 4: Build backend (TS → dist)
+      - name: Build backend (TS → dist)
+        run: |
+          cd D:\apps\ayan-ms\backend
+          npm run build
+
+      # Step 5: Install frontend dependencies
+      - name: Install frontend deps
+        run: |
+          cd D:\apps\ayan-ms\frontend
+          npm install
+
+      # Step 6: Build frontend (Vite → dist)
+      - name: Build frontend (Vite → dist)
+        run: |
+          cd D:\apps\ayan-ms\frontend
+          npm run build
+
+      # Step 7: Restart the backend with PM2
+      - name: Restart Backend
+        run: |
+          cd D:\apps\ayan-ms\backend
+          if (pm2 list | Select-String "ayan-backend") {
+            pm2 restart ayan-backend
+          } else {
+            pm2 start ecosystem.config.cjs
+          }
+            
