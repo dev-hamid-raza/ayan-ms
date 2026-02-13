@@ -67,6 +67,29 @@ jobs:
       - name: Restart Backend
         run: |
           cd backend
+          
+          # Check if ayan-backend process exists
+          $processExists = pm2 list | Select-String "ayan-backend"
+          
+          if ($processExists) {
+            Write-Host "Stopping and deleting existing ayan-backend..."
+            pm2 delete ayan-backend
+          } else {
+            Write-Host "No existing process found, starting fresh..."
+          }
+          
+          # Start the application
+          Write-Host "Starting ayan-backend..."
+          pm2 start ecosystem.config.cjs
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to start PM2 process"
+            exit 1
+          }
+          
+          Write-Host "✅ Backend started successfully" -ForegroundColor Green
+        run: |
+          cd backend
           if (pm2 list | Select-String "ayan-backend") {
             Write-Host "Restarting ayan-backend..."
             pm2 restart ayan-backend
@@ -112,7 +135,7 @@ jobs:
       # Step 10: Health check - Test if app responds
       - name: Health Check - Test App Response
         run: |
-          $port = 3000  # Change to your actual port
+          $port = 8000  # Change to your actual port
           
           Write-Host "Testing app on port $port..."
           
