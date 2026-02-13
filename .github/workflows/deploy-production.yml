@@ -1,0 +1,45 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest production code
+        run: |
+          cd C:\apps\ayan-ms
+          git fetch origin
+          git reset --hard origin/production
+
+      # BACKEND
+      - name: Install backend deps
+        run: |
+          cd C:\apps\ayan-ms\backend
+          npm install
+
+      - name: Build backend (TS → dist)
+        run: |
+          cd C:\apps\ayan-ms\backend
+          npm run build
+
+      # FRONTEND
+      - name: Install frontend deps
+        run: |
+          cd C:\apps\ayan-ms\frontend
+          npm install
+
+      - name: Build frontend (Vite → dist)
+        run: |
+          cd C:\apps\ayan-ms\frontend
+          npm run build
+
+      # Restart backend
+      - name: Restart Backend
+        run: |
+          cd C:\apps\ayan-ms\backend
+          pm2 restart ayan-backend || pm2 start ecosystem.config.js
