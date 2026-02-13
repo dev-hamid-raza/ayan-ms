@@ -88,20 +88,6 @@ jobs:
           }
           
           Write-Host "✅ Backend started successfully" -ForegroundColor Green
-        run: |
-          cd backend
-          if (pm2 list | Select-String "ayan-backend") {
-            Write-Host "Restarting ayan-backend..."
-            pm2 restart ayan-backend
-          } else {
-            Write-Host "Starting ayan-backend..."
-            pm2 start ecosystem.config.cjs
-          }
-          
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "PM2 command failed"
-            exit 1
-          }
 
       # Step 8: Wait for app to start
       - name: Wait for app startup
