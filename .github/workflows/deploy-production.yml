@@ -3,8 +3,7 @@ name: Deploy Production
 on:
   push:
     branches:
-      - production
-      - production
+      - production  # Make sure this triggers the workflow on the 'production' branch
 
 jobs:
   deploy:
@@ -13,17 +12,13 @@ jobs:
     steps:
       # Step 1: Checkout the latest production code
       - name: Checkout latest production code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
-          ref: production
-          clean: true  # Clean the workspace before checkout
+          ref: production  # Explicitly checkout the 'production' branch
 
-      # Step 2: Verify current branch and location
-      - name: Verify Current Branch and Directory
+      # Step 2: Verify current branch
+      - name: Verify Current Branch
         run: |
-          Write-Host "Current directory: $(Get-Location)"
-          Write-Host "Files in current directory:"
-          Get-ChildItem
           git branch -a
           git status
 
@@ -51,25 +46,13 @@ jobs:
           cd frontend
           npm run build
 
-      # Step 7: Copy built files to production directory
-      - name: Copy to production directory
-        run: |
-          # Create production directory if it doesn't exist
-          New-Item -ItemType Directory -Force -Path D:\apps\ayan-ms
-          
-          # Copy backend
-          Copy-Item -Path ".\backend\*" -Destination "D:\apps\ayan-ms\backend" -Recurse -Force
-          
-          # Copy frontend
-          Copy-Item -Path ".\frontend\*" -Destination "D:\apps\ayan-ms\frontend" -Recurse -Force
-
-      # Step 8: Restart the backend with PM2
+      # Step 7: Restart the backend with PM2
       - name: Restart Backend
         run: |
-          cd D:\apps\ayan-ms\backend
-          $pm2List = pm2 list
-          if ($pm2List -match "ayan-backend") {
+          cd backend
+          if (pm2 list | Select-String "ayan-backend") {
             pm2 restart ayan-backend
           } else {
             pm2 start ecosystem.config.cjs
           }
+            
