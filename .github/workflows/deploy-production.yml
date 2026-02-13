@@ -10,19 +10,48 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # Step 1: Checkout the latest production code
+      # Step 1: Backup .env files
+      - name: Backup .env files
+        run: |
+          if (Test-Path "backend\.env") {
+            Copy-Item "backend\.env" "backend\.env.backup" -Force
+            Write-Host "✅ Backend .env backed up"
+          }
+          if (Test-Path "frontend\.env") {
+            Copy-Item "frontend\.env" "frontend\.env.backup" -Force
+            Write-Host "✅ Frontend .env backed up"
+          }
+        continue-on-error: true
+
+      # Step 2: Checkout the latest production code
       - name: Checkout latest production code
         uses: actions/checkout@v3
         with:
           ref: production
+          clean: true
 
-      # Step 2: Verify current branch
+      # Step 3: Restore .env files
+      - name: Restore .env files
+        run: |
+          if (Test-Path "backend\.env.backup") {
+            Copy-Item "backend\.env.backup" "backend\.env" -Force
+            Remove-Item "backend\.env.backup" -Force
+            Write-Host "✅ Backend .env restored"
+          }
+          if (Test-Path "frontend\.env.backup") {
+            Copy-Item "frontend\.env.backup" "frontend\.env" -Force
+            Remove-Item "frontend\.env.backup" -Force
+            Write-Host "✅ Frontend .env restored"
+          }
+        continue-on-error: true
+
+      # Step 4: Verify current branch
       - name: Verify Current Branch
         run: |
           git branch -a
           git status
 
-      # Step 3: Install backend dependencies
+      # Step 5: Install backend dependencies
       - name: Install backend deps
         run: |
           cd backend
@@ -32,7 +61,7 @@ jobs:
             exit 1
           }
 
-      # Step 4: Build backend (TS → dist)
+      # Step 6: Build backend (TS → dist)
       - name: Build backend (TS → dist)
         run: |
           cd backend
@@ -42,7 +71,7 @@ jobs:
             exit 1
           }
 
-      # Step 5: Install frontend dependencies
+      # Step 7: Install frontend dependencies
       - name: Install frontend deps
         run: |
           cd frontend
@@ -52,7 +81,7 @@ jobs:
             exit 1
           }
 
-      # Step 6: Build frontend (Vite → dist)
+      # Step 8: Build frontend (Vite → dist)
       - name: Build frontend (Vite → dist)
         run: |
           cd frontend
@@ -62,12 +91,11 @@ jobs:
             exit 1
           }
 
-      # Step 7: Restart the backend with PM2
+      # Step 9: Restart the backend with PM2
       - name: Restart Backend
         run: |
           cd backend
           
-          # Check if ayan-backend process exists
           $processExists = pm2 list | Select-String "ayan-backend"
           
           if ($processExists) {
@@ -77,7 +105,6 @@ jobs:
             Write-Host "No existing process found, starting fresh..."
           }
           
-          # Start the application
           Write-Host "Starting ayan-backend..."
           pm2 start ecosystem.config.cjs
           
@@ -88,19 +115,18 @@ jobs:
           
           Write-Host "✅ Backend started successfully" -ForegroundColor Green
 
-      # Step 8: Wait for app to start
+      # Step 10: Wait for app to start
       - name: Wait for app startup
         run: |
           Write-Host "Waiting for app to start..."
           Start-Sleep -Seconds 5
 
-      # Step 9: Verify PM2 process is running
+      # Step 11: Verify PM2 process is running
       - name: Verify PM2 Process Status
         run: |
           cd backend
           Write-Host "Checking PM2 status..."
           
-          # Get the process ID (returns 0 if not running)
           $pidOutput = pm2 pid ayan-backend
           $appPid = $pidOutput.Trim()
           
@@ -117,51 +143,55 @@ jobs:
           Write-Host "Process ID: $appPid"
           pm2 list
 
-      # Step 10: Health check - Test if app responds
+      # Step 12: Health check - Test if app responds
       - name: Health Check - Test App Response
         run: |
-          $port = 8000  # Change to your actual port
+          $port = 8000
+          $healthEndpoint = "http://localhost:$port/"
           
-          Write-Host "Testing app on port $port..."
+          Write-Host "Testing app health at $healthEndpoint..."
           
           $maxAttempts = 5
-          $attempt = 0
           $success = $false
           
-          while ($attempt -lt $maxAttempts -and -not $success) {
-            $attempt++
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             Write-Host "Attempt $attempt of $maxAttempts..."
             
             try {
-              $testConnection = Test-NetConnection -ComputerName localhost -Port $port -WarningAction SilentlyContinue
-              if ($testConnection.TcpTestSucceeded) {
-                Write-Host "✅ App is responding on port $port!" -ForegroundColor Green
+              $response = Invoke-RestMethod -Uri $healthEndpoint -Method Get -TimeoutSec 5 -ErrorAction Stop
+              
+              if ($response.status -eq $true) {
+                Write-Host "✅ Health check passed! App is healthy." -ForegroundColor Green
+                Write-Host "Response: $($response | ConvertTo-Json -Compress)"
                 $success = $true
+                break
+              } else {
+                Write-Host "⚠️  App responded but status is not true" -ForegroundColor Yellow
               }
             } catch {
-              Write-Host "⚠️  Attempt $attempt failed" -ForegroundColor Yellow
-            }
-            
-            if (-not $success -and $attempt -lt $maxAttempts) {
-              Write-Host "Retrying in 3 seconds..."
-              Start-Sleep -Seconds 3
+              Write-Host "⚠️  Attempt $attempt failed: $($_.Exception.Message)" -ForegroundColor Yellow
+              
+              if ($attempt -lt $maxAttempts) {
+                Write-Host "Retrying in 3 seconds..."
+                Start-Sleep -Seconds 3
+              }
             }
           }
           
           if (-not $success) {
-            Write-Error "❌ Health check failed - app not responding on port $port"
+            Write-Error "❌ Health check failed after $maxAttempts attempts"
             Write-Host "`nShowing recent logs:"
             pm2 logs ayan-backend --lines 50 --nostream
             exit 1
           }
 
-      # Step 11: Save PM2 configuration
+      # Step 13: Save PM2 configuration
       - name: Save PM2 Configuration
         run: |
           pm2 save
           Write-Host "✅ PM2 configuration saved"
 
-      # Step 12: Deployment summary
+      # Step 14: Deployment summary
       - name: Deployment Summary
         run: |
           Write-Host "`n================================" -ForegroundColor Cyan
