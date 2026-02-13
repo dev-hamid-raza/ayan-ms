@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
-import { IOutwardGatePassRequestBody, IOutwardGatePassItems } from "../types/outwardGatePass.types";
-import { ApiError } from "../utils/ApiError";
-import { OutwardGatePass } from "../models/outwardGatePass.model";
-import { ApiResponse } from "../utils/ApiResponse";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { IOutwardGatePassRequestBody, IOutwardGatePassItems } from "../types/outwardGatePass.types.js";
+import { ApiError } from "../utils/ApiError.js";
+import { OutwardGatePass } from "../models/outwardGatePass.model.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Function to validate the items array
 const validateItems = (items: IOutwardGatePassItems[]) => {

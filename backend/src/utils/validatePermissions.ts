@@ -1,6 +1,6 @@
 // src/utils/validatePermissions.ts
-import { ACTIONS, MODULES } from '../config/accessControl';
-import { IPermission } from '../types/user.types'; 
+import { ACTIONS, MODULES } from '../config/accessControl.js';
+import { IPermission } from '../types/user.types.js'; 
 
 const validModules = new Set<string>(Object.values(MODULES));
 const validActions = new Set<string>(Object.values(ACTIONS));

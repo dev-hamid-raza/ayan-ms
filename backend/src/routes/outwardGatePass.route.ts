@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { createOutwardGatePass, deleteOutwardGatePass, getAllOutwardGatePasses, getOutwardGatePass, updateOutwardGatePass } from "../controllers/outwardGatePass.controller";
-import { verifyJWT } from "../middlewares/authenticate.middleware";
-import { authorizeModule } from "../middlewares/authorizeModule.middleware";
-import { ACTIONS, MODULES } from "../config/accessControl";
+import { createOutwardGatePass, deleteOutwardGatePass, getAllOutwardGatePasses, getOutwardGatePass, updateOutwardGatePass } from "../controllers/outwardGatePass.controller.js";
+import { verifyJWT } from "../middlewares/authenticate.middleware.js";
+import { authorizeModule } from "../middlewares/authorizeModule.middleware.js";
+import { ACTIONS, MODULES } from "../config/accessControl.js";
 
 const router = Router();
 
