@@ -10,9 +10,11 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # Step 1: Checkout the code
+      # Step 1: Checkout the latest code
       - name: Checkout latest production code
         uses: actions/checkout@v2
+        with:
+          ref: production  # Ensure we pull the latest changes from the production branch
 
       # Step 2: Install backend dependencies
       - name: Install backend deps
