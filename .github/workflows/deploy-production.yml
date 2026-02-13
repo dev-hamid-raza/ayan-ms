@@ -3,7 +3,7 @@ name: Deploy Production
 on:
   push:
     branches:
-      - production  # Make sure this triggers the workflow on the 'production' branch
+      - production
 
 jobs:
   deploy:
@@ -12,9 +12,10 @@ jobs:
     steps:
       # Step 1: Checkout the latest production code
       - name: Checkout latest production code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: production  # Explicitly checkout the 'production' branch
+          ref: production
+          clean: true
 
       # Step 2: Verify current branch
       - name: Verify Current Branch
@@ -27,37 +28,163 @@ jobs:
         run: |
           cd backend
           npm install
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Backend npm install failed"
+            exit 1
+          }
 
       # Step 4: Build backend (TS → dist)
       - name: Build backend (TS → dist)
         run: |
           cd backend
           npm run build
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Backend build failed"
+            exit 1
+          }
+          # Verify dist folder was created
+          if (-Not (Test-Path "dist")) {
+            Write-Error "Build failed: dist folder not found"
+            exit 1
+          }
 
       # Step 5: Install frontend dependencies
       - name: Install frontend deps
         run: |
           cd frontend
           npm install
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Frontend npm install failed"
+            exit 1
+          }
 
       # Step 6: Build frontend (Vite → dist)
       - name: Build frontend (Vite → dist)
         run: |
           cd frontend
           npm run build
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Frontend build failed"
+            exit 1
+          }
+          # Verify dist folder was created
+          if (-Not (Test-Path "dist")) {
+            Write-Error "Build failed: dist folder not found"
+            exit 1
+          }
 
-      # Step 7: Restart the backend with PM2
-      - name: Restart Backend
+      # Step 7: Stop PM2 process before restart (if exists)
+      - name: Stop existing PM2 process
         run: |
           cd backend
-          npm run start
+          $pm2List = pm2 list
+          if ($pm2List -match "ayan-backend") {
+            Write-Host "Stopping existing ayan-backend process..."
+            pm2 stop ayan-backend
+            pm2 delete ayan-backend
+          }
+        continue-on-error: true  # Don't fail if process doesn't exist
 
-      # - name: Restart Backend
-      #   run: |
-      #     cd backend
-      #     if (pm2 list | Select-String "ayan-backend") {
-      #       pm2 restart ayan-backend
-      #     } else {
-      #       pm2 start ecosystem.config.cjs
-      #     }
+      # Step 8: Start the backend with PM2
+      - name: Start Backend with PM2
+        run: |
+          cd backend
+          Write-Host "Starting ayan-backend with PM2..."
+          pm2 start ecosystem.config.cjs
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to start PM2 process"
+            pm2 logs ayan-backend --lines 50 --nostream
+            exit 1
+          }
+
+      # Step 9: Wait for app to start
+      - name: Wait for app startup
+        run: |
+          Write-Host "Waiting for app to start..."
+          Start-Sleep -Seconds 5
+
+      # Step 10: Verify PM2 process is running
+      - name: Verify PM2 Process Status
+        run: |
+          cd backend
+          Write-Host "Checking PM2 status..."
+          pm2 list
+          
+          # Check if process exists and is online
+          $pm2Status = pm2 jlist | ConvertFrom-Json
+          $ayanBackend = $pm2Status | Where-Object { $_.name -eq "ayan-backend" }
+          
+          if (-Not $ayanBackend) {
+            Write-Error "ayan-backend process not found in PM2"
+            pm2 logs ayan-backend --lines 50 --nostream
+            exit 1
+          }
+          
+          if ($ayanBackend.pm2_env.status -ne "online") {
+            Write-Error "ayan-backend is not online. Status: $($ayanBackend.pm2_env.status)"
+            pm2 logs ayan-backend --lines 50 --nostream
+            exit 1
+          }
+          
+          Write-Host "✅ PM2 process is running successfully" -ForegroundColor Green
+          Write-Host "Process ID: $($ayanBackend.pid)"
+          Write-Host "Uptime: $($ayanBackend.pm2_env.pm_uptime)"
+          Write-Host "Restarts: $($ayanBackend.pm2_env.restart_time)"
+
+      # Step 11: Health check - Test if app responds on its port
+      - name: Health Check - Test App Response
+        run: |
+          # Read port from ecosystem.config.cjs or use default
+          $port = 3000  # Change this to your actual port
+          
+          Write-Host "Testing app on port $port..."
+          
+          # Retry logic: try 5 times with 3 seconds between attempts
+          $maxAttempts = 5
+          $attempt = 0
+          $success = $false
+          
+          while ($attempt -lt $maxAttempts -and -not $success) {
+            $attempt++
+            Write-Host "Attempt $attempt of $maxAttempts..."
             
+            try {
+              $response = Invoke-WebRequest -Uri "http://localhost:$port" -TimeoutSec 5 -UseBasicParsing
+              if ($response.StatusCode -eq 200) {
+                Write-Host "✅ App is responding successfully!" -ForegroundColor Green
+                Write-Host "Status Code: $($response.StatusCode)"
+                $success = $true
+              }
+            } catch {
+              Write-Host "⚠️  Attempt $attempt failed: $($_.Exception.Message)" -ForegroundColor Yellow
+              if ($attempt -lt $maxAttempts) {
+                Write-Host "Retrying in 3 seconds..."
+                Start-Sleep -Seconds 3
+              }
+            }
+          }
+          
+          if (-not $success) {
+            Write-Error "❌ Health check failed after $maxAttempts attempts"
+            Write-Host "Showing recent logs:"
+            pm2 logs ayan-backend --lines 50 --nostream
+            exit 1
+          }
+
+      # Step 12: Save PM2 process list
+      - name: Save PM2 Configuration
+        run: |
+          pm2 save
+          Write-Host "✅ PM2 configuration saved"
+
+      # Step 13: Show final status
+      - name: Deployment Summary
+        run: |
+          Write-Host "`n================================" -ForegroundColor Cyan
+          Write-Host "🚀 DEPLOYMENT SUCCESSFUL" -ForegroundColor Green
+          Write-Host "================================" -ForegroundColor Cyan
+          Write-Host "`nPM2 Status:"
+          pm2 list
+          Write-Host "`nRecent Logs:"
+          pm2 logs ayan-backend --lines 20 --nostream
