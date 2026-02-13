@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "ayan-backend",
             script: "dist/index.js",  // Make sure you use compiled JS in dist folder
-            cwd: "D:/apps/ayan-ms/backend",  // Set the correct working directory
+            cwd: "backend",  // Set the correct working directory
             env: {
                 NODE_ENV: "production"
             },
