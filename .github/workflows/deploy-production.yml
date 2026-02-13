@@ -3,18 +3,18 @@ name: Deploy Production
 on:
   push:
     branches:
-      - production
+      - production  # Make sure this triggers the workflow on the 'production' branch
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      # Step 1: Checkout the latest production code (Make sure this is the first step)
+      # Step 1: Checkout the latest production code
       - name: Checkout latest production code
         uses: actions/checkout@v2
         with:
-          ref: production  # Explicitly set 'production' branch
+          ref: production  # Explicitly checkout the 'production' branch
 
       # Step 2: Verify current branch
       - name: Verify Current Branch
