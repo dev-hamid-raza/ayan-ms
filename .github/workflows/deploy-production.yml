@@ -103,9 +103,9 @@ jobs:
           
           # Get the process ID (returns 0 if not running)
           $pidOutput = pm2 pid ayan-backend
-          $pid = $pidOutput.Trim()
+          $appPid = $pidOutput.Trim()
           
-          if ([string]::IsNullOrWhiteSpace($pid) -or $pid -eq "0") {
+          if ([string]::IsNullOrWhiteSpace($appPid) -or $appPid -eq "0") {
             Write-Error "❌ ayan-backend is not running"
             Write-Host "`nShowing PM2 list:"
             pm2 list
@@ -115,7 +115,7 @@ jobs:
           }
           
           Write-Host "✅ PM2 process is running successfully" -ForegroundColor Green
-          Write-Host "Process ID: $pid"
+          Write-Host "Process ID: $appPid"
           pm2 list
 
       # Step 10: Health check - Test if app responds
