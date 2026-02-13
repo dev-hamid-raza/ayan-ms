@@ -1,7 +1,7 @@
 // src/middleware/authorizeModule.ts
 import { Response, NextFunction, Request } from 'express';
-import { ROLES, MODULES, ACTIONS } from '../config/accessControl';
-import { ApiError } from '../utils/ApiError';
+import { ROLES, MODULES, ACTIONS } from '../config/accessControl.js';
+import { ApiError } from '../utils/ApiError.js';
 
 export const authorizeModule =
     (module: MODULES, action: ACTIONS) =>

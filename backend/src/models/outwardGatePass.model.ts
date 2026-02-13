@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { Counter } from "./counter.model";
-import { IOutwardGatePass, IOutwardGatePassItems } from "../types/outwardGatePass.types";
+import { Counter } from "./counter.model.js";
+import { IOutwardGatePass, IOutwardGatePassItems } from "../types/outwardGatePass.types.js";
 
 const outwardGatePassItemsSchema = new Schema<IOutwardGatePassItems>({
     description: {

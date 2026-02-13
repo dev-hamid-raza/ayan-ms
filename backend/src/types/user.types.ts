@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { ACTIONS, MODULES, ROLES } from "../config/accessControl";
+import { ACTIONS, MODULES, ROLES } from "../config/accessControl.js";
 
 export interface IPermission {
     module: MODULES;

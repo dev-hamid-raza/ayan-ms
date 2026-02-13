@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { adminResetUserPassword, checkAuthStatus, getAllUsers, loginUser, logoutUser, registerUser, updateMyPassword, updateUser } from "../controllers/user.controller";
-import { verifyJWT } from "../middlewares/authenticate.middleware";
-import { authorizeRole } from "../middlewares/authorizeRole";
-import { ROLES } from "../config/accessControl";
+import { adminResetUserPassword, checkAuthStatus, getAllUsers, loginUser, logoutUser, registerUser, updateMyPassword, updateUser } from "../controllers/user.controller.js";
+import { verifyJWT } from "../middlewares/authenticate.middleware.js";
+import { authorizeRole } from "../middlewares/authorizeRole.js";
+import { ROLES } from "../config/accessControl.js";
 
 const router = Router();
 

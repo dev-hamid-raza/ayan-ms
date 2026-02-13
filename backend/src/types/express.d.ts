@@ -1,5 +1,5 @@
 // types/express/index.d.ts
-import { IUser } from "./user.types";
+import { IUser } from "./user.types.js";
 
 declare global {
     namespace Express {

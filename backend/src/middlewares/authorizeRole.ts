@@ -1,5 +1,5 @@
 import { Response, NextFunction, Request } from 'express';
-import { ROLES } from '../config/accessControl';
+import { ROLES } from '../config/accessControl.js';
 
 export const authorizeRole =
     (...allowedRoles: ROLES[]) =>

@@ -1,13 +1,13 @@
 // src/scripts/seedAdmin.ts
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { User } from '../models/user.model';
-import { ROLES } from '../config/accessControl';
-import { connectDB } from '../db';
+import { User } from '../models/user.model.js';
+import { ROLES } from '../config/accessControl.js';
+import { connectDB } from '../db/index.js';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/yourdb';
+const MONGO_URI = process.env.MONGODB_URI;
 
 const seedAdmin = async () => {
     try {
