@@ -50,9 +50,14 @@ jobs:
       - name: Restart Backend
         run: |
           cd backend
-          if (pm2 list | Select-String "ayan-backend") {
-            pm2 restart ayan-backend
-          } else {
-            pm2 start ecosystem.config.cjs
-          }
+          npm run start
+
+      # - name: Restart Backend
+      #   run: |
+      #     cd backend
+      #     if (pm2 list | Select-String "ayan-backend") {
+      #       pm2 restart ayan-backend
+      #     } else {
+      #       pm2 start ecosystem.config.cjs
+      #     }
             
