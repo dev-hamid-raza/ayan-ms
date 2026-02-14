@@ -10,73 +10,100 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # 1️⃣ Checkout latest code (clean safe)
-      - name: Checkout production branch
+
+      # 1️⃣ Checkout latest production branch
+      - name: Checkout Production Branch
         uses: actions/checkout@v3
         with:
           ref: production
           clean: true
 
+
       # 2️⃣ Create backend .env from GitHub Secret
-      - name: Create backend .env
+      - name: Create Backend .env
         run: |
           Set-Content -Path backend\.env -Value "${{ secrets.BACKEND_ENV }}"
           Write-Host "✅ Backend .env created"
 
+
       # 3️⃣ Create frontend .env from GitHub Secret
-      - name: Create frontend .env
+      - name: Create Frontend .env
         run: |
           Set-Content -Path frontend\.env -Value "${{ secrets.FRONTEND_ENV }}"
           Write-Host "✅ Frontend .env created"
 
+
       # 4️⃣ Install backend dependencies
-      - name: Install backend dependencies
+      - name: Install Backend Dependencies
         run: |
           cd backend
           npm ci
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ Backend dependency install failed"
+            exit 1
+          }
+
 
       # 5️⃣ Build backend
-      - name: Build backend
+      - name: Build Backend
         run: |
           cd backend
           npm run build
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ Backend build failed"
+            exit 1
+          }
+
 
       # 6️⃣ Install frontend dependencies
-      - name: Install frontend dependencies
+      - name: Install Frontend Dependencies
         run: |
           cd frontend
           npm ci
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ Frontend dependency install failed"
+            exit 1
+          }
+
 
       # 7️⃣ Build frontend
-      - name: Build frontend
+      - name: Build Frontend
         run: |
           cd frontend
           npm run build
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ Frontend build failed"
+            exit 1
+          }
 
-      # 8️⃣ Restart backend with PM2 (zero duplicate process)
+
+      # 8️⃣ Restart backend safely with PM2
       - name: Restart Backend with PM2
         run: |
           cd backend
 
-          $exists = pm2 list | Select-String "ayan-backend"
+          Write-Host "🔄 Cleaning old PM2 process (if exists)..."
+          pm2 delete ayan-backend 2>$null
 
-          if ($exists) {
-            Write-Host "Restarting ayan-backend..."
-            pm2 restart ayan-backend
-          } else {
-            Write-Host "Starting ayan-backend..."
-            pm2 start ecosystem.config.cjs
+          Write-Host "🚀 Starting ayan-backend..."
+          pm2 start ecosystem.config.cjs --only ayan-backend --update-env
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ PM2 start failed"
+            pm2 logs ayan-backend --lines 50 --nostream
+            exit 1
           }
 
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          pm2 save
+          Write-Host "✅ PM2 process started successfully"
+
 
       # 9️⃣ Wait for app startup
-      - name: Wait for startup
-        run: Start-Sleep -Seconds 5
+      - name: Wait for Startup
+        run: |
+          Write-Host "⏳ Waiting for app to start..."
+          Start-Sleep -Seconds 5
+
 
       # 🔟 Health check
       - name: Health Check
@@ -84,29 +111,40 @@ jobs:
           $port = 8000
           $url = "http://localhost:$port/"
 
-          Write-Host "Checking health at $url"
+          Write-Host "🔎 Testing health at $url"
 
-          try {
-            $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5
-            if ($response.status -ne $true) {
-              Write-Error "App unhealthy"
-              exit 1
+          $maxAttempts = 5
+          $success = $false
+
+          for ($i = 1; $i -le $maxAttempts; $i++) {
+
+            try {
+              $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5 -ErrorAction Stop
+
+              if ($response.status -eq $true) {
+                Write-Host "✅ Health check passed!"
+                $success = $true
+                break
+              }
+
+            } catch {
+              Write-Host "⚠️ Attempt $i failed..."
+              Start-Sleep -Seconds 3
             }
-            Write-Host "✅ App is healthy"
-          } catch {
-            Write-Error "Health check failed"
-            pm2 logs ayan-backend --lines 50 --nostream
+          }
+
+          if (-not $success) {
+            Write-Error "❌ Health check failed"
+            pm2 logs ayan-backend --lines 100 --nostream
             exit 1
           }
 
-      # 1️⃣1️⃣ Save PM2 state
-      - name: Save PM2
-        run: pm2 save
 
-      # 1️⃣2️⃣ Deployment summary
+      # 1️⃣1️⃣ Deployment Summary
       - name: Deployment Summary
         run: |
-          Write-Host "================================"
+          Write-Host ""
+          Write-Host "======================================"
           Write-Host "🚀 DEPLOYMENT SUCCESSFUL"
-          Write-Host "================================"
+          Write-Host "======================================"
           pm2 list
