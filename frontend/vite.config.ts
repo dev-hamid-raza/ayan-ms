@@ -14,7 +14,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Ayan Management System App',
-        short_name: 'AyanMS',
+        short_name: 'Ayan App',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
