@@ -118,7 +118,7 @@ jobs:
         shell: powershell
         run: |
           $port = 8000
-          $url = "http://localhost:$port/"
+          $url = "http://localhost:$port/health"
 
           Write-Host "Testing health at $url"
 
