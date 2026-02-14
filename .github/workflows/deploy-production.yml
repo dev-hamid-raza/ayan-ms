@@ -169,3 +169,4 @@ jobs:
           Write-Host "DEPLOYMENT SUCCESSFUL"
           Write-Host "======================================"
           pm2 list
+          
