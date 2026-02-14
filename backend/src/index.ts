@@ -19,8 +19,8 @@ const __dirname = path.dirname(__filename)
 const certPath = path.join(__dirname, "../certs")
 
 const httpsOptions = {
-    key: fs.readFileSync(path.join(certPath, "app.ayan-ms.com-key.pem")),
-    cert: fs.readFileSync(path.join(certPath, "app.ayan-ms.com.pem")),
+    key: fs.readFileSync(path.join(certPath, "app.ayan-ms.com+1-key.pem")),
+    cert: fs.readFileSync(path.join(certPath, "app.ayan-ms.com+1.pem")),
 }
 
 connectDB()
