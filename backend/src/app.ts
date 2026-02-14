@@ -57,8 +57,15 @@ if (fs.existsSync(frontendPath)) {
 
     app.use(express.static(frontendPath))
 
-    // SPA fallback for React Router
-    app.get("*", (req, res) => {
+    // SPA fallback ONLY for non-API routes
+    app.get("*", (req, res, next) => {
+
+        // Skip API routes
+        if (req.originalUrl.startsWith("/api") || 
+            req.originalUrl.startsWith("/health")) {
+            return next()
+        }
+
         res.sendFile(path.join(frontendPath, "index.html"))
     })
 
