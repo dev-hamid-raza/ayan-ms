@@ -18,23 +18,6 @@ jobs:
           ref: production
           clean: false
 
-
-      # 2. Create backend .env
-      - name: Create Backend .env
-        shell: powershell
-        run: |
-          Set-Content -Path "backend\.env" -Value "${{ secrets.BACKEND_ENV }}"
-          Write-Host "Backend .env created successfully"
-
-
-      # 3. Create frontend .env
-      - name: Create Frontend .env
-        shell: powershell
-        run: |
-          Set-Content -Path "frontend\.env" -Value "${{ secrets.FRONTEND_ENV }}"
-          Write-Host "Frontend .env created successfully"
-
-
       # 4. Install backend dependencies
       - name: Install Backend Dependencies
         shell: powershell
