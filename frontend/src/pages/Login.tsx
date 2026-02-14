@@ -51,6 +51,7 @@ function Login() {
   };
   return (
     <div className='h-screen flex justify-center items-center'>
+      <title>Login</title>
       <div className="w-96 border p-3 rounded-md">
         <form className="space-y-4 py-4">
           <h1 className="font-bold text-3xl text-center">Login</h1>
