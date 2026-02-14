@@ -11,7 +11,7 @@ jobs:
 
     steps:
 
-      # 1️⃣ Checkout latest production branch
+      # 1. Checkout latest production code
       - name: Checkout Production Branch
         uses: actions/checkout@v3
         with:
@@ -19,99 +19,108 @@ jobs:
           clean: true
 
 
-      # 2️⃣ Create backend .env from GitHub Secret
+      # 2. Create backend .env from GitHub Secret
       - name: Create Backend .env
+        shell: powershell
         run: |
-          Set-Content -Path backend\.env -Value "${{ secrets.BACKEND_ENV }}"
-          Write-Host "✅ Backend .env created"
+          Set-Content -Path "backend\.env" -Value "${{ secrets.BACKEND_ENV }}"
+          Write-Host "Backend .env created successfully"
 
 
-      # 3️⃣ Create frontend .env from GitHub Secret
+      # 3. Create frontend .env from GitHub Secret
       - name: Create Frontend .env
+        shell: powershell
         run: |
-          Set-Content -Path frontend\.env -Value "${{ secrets.FRONTEND_ENV }}"
-          Write-Host "✅ Frontend .env created"
+          Set-Content -Path "frontend\.env" -Value "${{ secrets.FRONTEND_ENV }}"
+          Write-Host "Frontend .env created successfully"
 
 
-      # 4️⃣ Install backend dependencies
+      # 4. Install backend dependencies
       - name: Install Backend Dependencies
+        shell: powershell
         run: |
           cd backend
           npm ci
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Backend dependency install failed"
+            Write-Error "Backend dependency installation failed"
             exit 1
           }
 
 
-      # 5️⃣ Build backend
+      # 5. Build backend
       - name: Build Backend
+        shell: powershell
         run: |
           cd backend
           npm run build
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Backend build failed"
+            Write-Error "Backend build failed"
             exit 1
           }
 
 
-      # 6️⃣ Install frontend dependencies
+      # 6. Install frontend dependencies
       - name: Install Frontend Dependencies
+        shell: powershell
         run: |
           cd frontend
           npm ci
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Frontend dependency install failed"
+            Write-Error "Frontend dependency installation failed"
             exit 1
           }
 
 
-      # 7️⃣ Build frontend
+      # 7. Build frontend
       - name: Build Frontend
+        shell: powershell
         run: |
           cd frontend
           npm run build
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Frontend build failed"
+            Write-Error "Frontend build failed"
             exit 1
           }
 
 
-      # 8️⃣ Restart backend safely with PM2
+      # 8. Restart backend safely with PM2
       - name: Restart Backend with PM2
+        shell: powershell
         run: |
           cd backend
 
-          Write-Host "🔄 Cleaning old PM2 process (if exists)..."
+          Write-Host "Cleaning old PM2 process if exists..."
           pm2 delete ayan-backend 2>$null
 
-          Write-Host "🚀 Starting ayan-backend..."
+          Write-Host "Starting ayan-backend..."
           pm2 start ecosystem.config.cjs --only ayan-backend --update-env
 
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ PM2 start failed"
+            Write-Error "PM2 start failed"
             pm2 logs ayan-backend --lines 50 --nostream
             exit 1
           }
 
           pm2 save
-          Write-Host "✅ PM2 process started successfully"
+          Write-Host "PM2 process started successfully"
 
 
-      # 9️⃣ Wait for app startup
+      # 9. Wait for application startup
       - name: Wait for Startup
+        shell: powershell
         run: |
-          Write-Host "⏳ Waiting for app to start..."
+          Write-Host "Waiting for application startup..."
           Start-Sleep -Seconds 5
 
 
-      # 🔟 Health check
+      # 10. Health check
       - name: Health Check
+        shell: powershell
         run: |
           $port = 8000
           $url = "http://localhost:$port/"
 
-          Write-Host "🔎 Testing health at $url"
+          Write-Host "Testing health at $url"
 
           $maxAttempts = 5
           $success = $false
@@ -122,29 +131,30 @@ jobs:
               $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5 -ErrorAction Stop
 
               if ($response.status -eq $true) {
-                Write-Host "✅ Health check passed!"
+                Write-Host "Health check passed"
                 $success = $true
                 break
               }
 
             } catch {
-              Write-Host "⚠️ Attempt $i failed..."
+              Write-Host "Attempt $i failed"
               Start-Sleep -Seconds 3
             }
           }
 
           if (-not $success) {
-            Write-Error "❌ Health check failed"
+            Write-Error "Health check failed"
             pm2 logs ayan-backend --lines 100 --nostream
             exit 1
           }
 
 
-      # 1️⃣1️⃣ Deployment Summary
+      # 11. Deployment summary
       - name: Deployment Summary
+        shell: powershell
         run: |
           Write-Host ""
           Write-Host "======================================"
-          Write-Host "🚀 DEPLOYMENT SUCCESSFUL"
+          Write-Host "DEPLOYMENT SUCCESSFUL"
           Write-Host "======================================"
           pm2 list
