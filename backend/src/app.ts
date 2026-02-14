@@ -64,16 +64,18 @@ if (fs.existsSync(frontendPath)) {
 
     app.use(express.static(frontendPath))
 
-    // SPA fallback ONLY for non-API routes
-    app.get("*", (req, res, next) => {
+    // SPA fallback (modern safe version)
+    app.use((req, res, next) => {
 
-        // Skip API routes
-        if (req.originalUrl.startsWith("/api") || 
-            req.originalUrl.startsWith("/health")) {
-            return next()
+        if (
+            req.method === "GET" &&
+            !req.path.startsWith("/api") &&
+            !req.path.startsWith("/health")
+        ) {
+            return res.sendFile(path.join(frontendPath, "index.html"))
         }
 
-        res.sendFile(path.join(frontendPath, "index.html"))
+        next()
     })
 
 } else {
