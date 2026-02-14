@@ -87,7 +87,7 @@ export const loginUser = asyncHandler(async (req: Request<{}, {}, ILoginBody>, r
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: false,
     }
 
     return res
