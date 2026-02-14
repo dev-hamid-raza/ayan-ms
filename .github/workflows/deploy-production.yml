@@ -16,9 +16,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: production
+          clean: true
 
 
-      # 2. Create backend .env from GitHub Secret
+      # 2. Create backend .env
       - name: Create Backend .env
         shell: powershell
         run: |
@@ -26,7 +27,7 @@ jobs:
           Write-Host "Backend .env created successfully"
 
 
-      # 3. Create frontend .env from GitHub Secret
+      # 3. Create frontend .env
       - name: Create Frontend .env
         shell: powershell
         run: |
@@ -82,16 +83,29 @@ jobs:
           }
 
 
-      # 8. Restart backend safely with PM2
+      # 8. Verify frontend dist exists
+      - name: Verify Frontend Dist
+        shell: powershell
+        run: |
+          if (!(Test-Path "frontend\dist\index.html")) {
+            Write-Error "frontend/dist/index.html NOT found"
+            exit 1
+          }
+
+          Write-Host "Frontend dist verified successfully"
+          dir frontend\dist
+
+
+      # 9. Restart backend safely with PM2
       - name: Restart Backend with PM2
         shell: powershell
         run: |
           cd backend
 
-          Write-Host "Cleaning old PM2 process if exists..."
+          Write-Host "Stopping old process if exists..."
           pm2 delete ayan-backend 2>$null
 
-          Write-Host "Starting ayan-backend..."
+          Write-Host "Starting backend..."
           pm2 start ecosystem.config.cjs --only ayan-backend --update-env
 
           if ($LASTEXITCODE -ne 0) {
@@ -104,7 +118,7 @@ jobs:
           Write-Host "PM2 process started successfully"
 
 
-      # 9. Wait for application startup
+      # 10. Wait for application startup
       - name: Wait for Startup
         shell: powershell
         run: |
@@ -112,7 +126,7 @@ jobs:
           Start-Sleep -Seconds 5
 
 
-      # 10. Health check
+      # 11. Health check
       - name: Health Check
         shell: powershell
         run: |
@@ -125,7 +139,6 @@ jobs:
           $success = $false
 
           for ($i = 1; $i -le $maxAttempts; $i++) {
-
             try {
               $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5 -ErrorAction Stop
 
@@ -148,7 +161,7 @@ jobs:
           }
 
 
-      # 11. Deployment summary
+      # 12. Deployment summary
       - name: Deployment Summary
         shell: powershell
         run: |
