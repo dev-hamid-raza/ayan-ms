@@ -10,192 +10,103 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # Step 1: Backup .env files
-      - name: Backup .env files
-        run: |
-          if (Test-Path "backend\.env") {
-            Copy-Item "backend\.env" "backend\.env.backup" -Force
-            Write-Host "✅ Backend .env backed up"
-          }
-          if (Test-Path "frontend\.env") {
-            Copy-Item "frontend\.env" "frontend\.env.backup" -Force
-            Write-Host "✅ Frontend .env backed up"
-          }
-        continue-on-error: true
-
-      # Step 2: Checkout the latest production code
-      - name: Checkout latest production code
+      # 1️⃣ Checkout latest code (clean safe)
+      - name: Checkout production branch
         uses: actions/checkout@v3
         with:
           ref: production
           clean: true
 
-      # Step 3: Restore .env files
-      - name: Restore .env files
+      # 2️⃣ Create backend .env from GitHub Secret
+      - name: Create backend .env
         run: |
-          if (Test-Path "backend\.env.backup") {
-            Copy-Item "backend\.env.backup" "backend\.env" -Force
-            Remove-Item "backend\.env.backup" -Force
-            Write-Host "✅ Backend .env restored"
-          }
-          if (Test-Path "frontend\.env.backup") {
-            Copy-Item "frontend\.env.backup" "frontend\.env" -Force
-            Remove-Item "frontend\.env.backup" -Force
-            Write-Host "✅ Frontend .env restored"
-          }
-        continue-on-error: true
+          Set-Content -Path backend\.env -Value "${{ secrets.BACKEND_ENV }}"
+          Write-Host "✅ Backend .env created"
 
-      # Step 4: Verify current branch
-      - name: Verify Current Branch
+      # 3️⃣ Create frontend .env from GitHub Secret
+      - name: Create frontend .env
         run: |
-          git branch -a
-          git status
+          Set-Content -Path frontend\.env -Value "${{ secrets.FRONTEND_ENV }}"
+          Write-Host "✅ Frontend .env created"
 
-      # Step 5: Install backend dependencies
-      - name: Install backend deps
+      # 4️⃣ Install backend dependencies
+      - name: Install backend dependencies
         run: |
           cd backend
-          npm install
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Backend npm install failed"
-            exit 1
-          }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Step 6: Build backend (TS → dist)
-      - name: Build backend (TS → dist)
+      # 5️⃣ Build backend
+      - name: Build backend
         run: |
           cd backend
           npm run build
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Backend build failed"
-            exit 1
-          }
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Step 7: Install frontend dependencies
-      - name: Install frontend deps
+      # 6️⃣ Install frontend dependencies
+      - name: Install frontend dependencies
         run: |
           cd frontend
-          npm install
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Frontend npm install failed"
-            exit 1
-          }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Step 8: Build frontend (Vite → dist)
-      - name: Build frontend (Vite → dist)
+      # 7️⃣ Build frontend
+      - name: Build frontend
         run: |
           cd frontend
           npm run build
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Frontend build failed"
-            exit 1
-          }
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Step 9: Restart the backend with PM2
-      - name: Restart Backend
+      # 8️⃣ Restart backend with PM2 (zero duplicate process)
+      - name: Restart Backend with PM2
         run: |
           cd backend
-          
-          $processExists = pm2 list | Select-String "ayan-backend"
-          
-          if ($processExists) {
-            Write-Host "Stopping and deleting existing ayan-backend..."
-            pm2 delete ayan-backend
+
+          $exists = pm2 list | Select-String "ayan-backend"
+
+          if ($exists) {
+            Write-Host "Restarting ayan-backend..."
+            pm2 restart ayan-backend
           } else {
-            Write-Host "No existing process found, starting fresh..."
+            Write-Host "Starting ayan-backend..."
+            pm2 start ecosystem.config.cjs
           }
-          
-          Write-Host "Starting ayan-backend..."
-          pm2 start ecosystem.config.cjs
-          
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to start PM2 process"
-            exit 1
-          }
-          
-          Write-Host "✅ Backend started successfully" -ForegroundColor Green
 
-      # Step 10: Wait for app to start
-      - name: Wait for app startup
-        run: |
-          Write-Host "Waiting for app to start..."
-          Start-Sleep -Seconds 5
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Step 11: Verify PM2 process is running
-      - name: Verify PM2 Process Status
-        run: |
-          cd backend
-          Write-Host "Checking PM2 status..."
-          
-          $pidOutput = pm2 pid ayan-backend
-          $appPid = $pidOutput.Trim()
-          
-          if ([string]::IsNullOrWhiteSpace($appPid) -or $appPid -eq "0") {
-            Write-Error "❌ ayan-backend is not running"
-            Write-Host "`nShowing PM2 list:"
-            pm2 list
-            Write-Host "`nShowing recent logs:"
-            pm2 logs ayan-backend --lines 50 --nostream
-            exit 1
-          }
-          
-          Write-Host "✅ PM2 process is running successfully" -ForegroundColor Green
-          Write-Host "Process ID: $appPid"
-          pm2 list
+      # 9️⃣ Wait for app startup
+      - name: Wait for startup
+        run: Start-Sleep -Seconds 5
 
-      # Step 12: Health check - Test if app responds
-      - name: Health Check - Test App Response
+      # 🔟 Health check
+      - name: Health Check
         run: |
           $port = 8000
-          $healthEndpoint = "http://localhost:$port/"
-          
-          Write-Host "Testing app health at $healthEndpoint..."
-          
-          $maxAttempts = 5
-          $success = $false
-          
-          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-            Write-Host "Attempt $attempt of $maxAttempts..."
-            
-            try {
-              $response = Invoke-RestMethod -Uri $healthEndpoint -Method Get -TimeoutSec 5 -ErrorAction Stop
-              
-              if ($response.status -eq $true) {
-                Write-Host "✅ Health check passed! App is healthy." -ForegroundColor Green
-                Write-Host "Response: $($response | ConvertTo-Json -Compress)"
-                $success = $true
-                break
-              } else {
-                Write-Host "⚠️  App responded but status is not true" -ForegroundColor Yellow
-              }
-            } catch {
-              Write-Host "⚠️  Attempt $attempt failed: $($_.Exception.Message)" -ForegroundColor Yellow
-              
-              if ($attempt -lt $maxAttempts) {
-                Write-Host "Retrying in 3 seconds..."
-                Start-Sleep -Seconds 3
-              }
+          $url = "http://localhost:$port/"
+
+          Write-Host "Checking health at $url"
+
+          try {
+            $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5
+            if ($response.status -ne $true) {
+              Write-Error "App unhealthy"
+              exit 1
             }
-          }
-          
-          if (-not $success) {
-            Write-Error "❌ Health check failed after $maxAttempts attempts"
-            Write-Host "`nShowing recent logs:"
+            Write-Host "✅ App is healthy"
+          } catch {
+            Write-Error "Health check failed"
             pm2 logs ayan-backend --lines 50 --nostream
             exit 1
           }
 
-      # Step 13: Save PM2 configuration
-      - name: Save PM2 Configuration
-        run: |
-          pm2 save
-          Write-Host "✅ PM2 configuration saved"
+      # 1️⃣1️⃣ Save PM2 state
+      - name: Save PM2
+        run: pm2 save
 
-      # Step 14: Deployment summary
+      # 1️⃣2️⃣ Deployment summary
       - name: Deployment Summary
         run: |
-          Write-Host "`n================================" -ForegroundColor Cyan
-          Write-Host "🚀 DEPLOYMENT SUCCESSFUL" -ForegroundColor Green
-          Write-Host "================================" -ForegroundColor Cyan
-          Write-Host "`nPM2 Status:"
+          Write-Host "================================"
+          Write-Host "🚀 DEPLOYMENT SUCCESSFUL"
+          Write-Host "================================"
           pm2 list
