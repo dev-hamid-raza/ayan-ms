@@ -9,7 +9,7 @@ module.exports = {
     max_memory_restart: '500M',
     env: {
       NODE_ENV: 'production',
-      PORT: 8000               // Your actual port
+      PORT: 443               // Your actual port
     },
     error_file: './logs/err.log',
     out_file: './logs/out.log',
