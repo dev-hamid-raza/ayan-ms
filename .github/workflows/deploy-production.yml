@@ -113,8 +113,8 @@ jobs:
       - name: Health Check
         shell: powershell
         run: |
-          $port = 8000
-          $url = "http://localhost:$port/health"
+          $port = 443
+          $url = "https://localhost:$port/health"
 
           Write-Host "Testing health at $url"
 
