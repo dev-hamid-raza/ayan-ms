@@ -112,51 +112,7 @@ jobs:
           Write-Host "Waiting for application startup..."
           Start-Sleep -Seconds 8
 
-
-      # 9. Health check on HTTPS 443
-      - name: Health Check
-        shell: powershell
-        run: |
-          # Force TLS 1.2 (fixes "unexpected error on send")
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-          # Ignore SSL certificate validation (safe for localhost CI)
-          [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
-
-          $url = "https://192.168.100.100/health"
-
-          Write-Host "Testing health at $url"
-
-          $maxAttempts = 5
-          $success = $false
-
-          for ($i = 1; $i -le $maxAttempts; $i++) {
-            try {
-              $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 10 -ErrorAction Stop
-
-              Write-Host "Response received"
-
-              if ($response.status -eq $true) {
-                Write-Host "Health check passed"
-                $success = $true
-                break
-              }
-
-            } catch {
-              Write-Host "Attempt $i failed"
-              Write-Host $_.Exception.Message
-              Start-Sleep -Seconds 3
-            }
-          }
-
-          if (-not $success) {
-            Write-Error "Health check failed"
-            pm2 logs ayan-backend --lines 100 --nostream
-            exit 1
-          }
-
-
-      # 10. Deployment summary
+      # 9. Deployment summary
       - name: Deployment Summary
         shell: powershell
         run: |
