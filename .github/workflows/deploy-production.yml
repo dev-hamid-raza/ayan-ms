@@ -80,7 +80,7 @@ jobs:
           dir frontend\dist
 
 
-      # 7. Restart backend safely with PM2 (Zero Downtime)
+      # 7. Reload backend safely with PM2 (Zero Downtime)
       - name: Reload Backend with PM2
         shell: powershell
         run: |
@@ -110,14 +110,17 @@ jobs:
         shell: powershell
         run: |
           Write-Host "Waiting for application startup..."
-          Start-Sleep -Seconds 5
+          Start-Sleep -Seconds 8
 
 
-      # 9. Health check (HTTPS 443)
+      # 9. Health check on HTTPS 443
       - name: Health Check
         shell: powershell
         run: |
-          # Ignore SSL certificate validation for localhost
+          # Force TLS 1.2 (fixes "unexpected error on send")
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+          # Ignore SSL certificate validation (safe for localhost CI)
           [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
           $url = "https://localhost/health"
@@ -129,7 +132,9 @@ jobs:
 
           for ($i = 1; $i -le $maxAttempts; $i++) {
             try {
-              $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 5 -ErrorAction Stop
+              $response = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 10 -ErrorAction Stop
+
+              Write-Host "Response received"
 
               if ($response.status -eq $true) {
                 Write-Host "Health check passed"
