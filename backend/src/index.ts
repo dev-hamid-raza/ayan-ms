@@ -16,11 +16,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Path to cert folder
-const certPath = path.join(__dirname, "../certs")
+const certPath = path.join(__dirname, "../../../certs")
 
 const httpsOptions = {
-    key: fs.readFileSync(path.join(certPath, "app.ayan-ms.com+1-key.pem")),
-    cert: fs.readFileSync(path.join(certPath, "app.ayan-ms.com+1.pem")),
+    key: fs.readFileSync(path.join(certPath, "app.ayan-ms.com.key")),
+    cert: fs.readFileSync(path.join(certPath, "app.ayan-ms.com.crt")),
 }
 
 connectDB()
