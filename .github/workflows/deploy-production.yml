@@ -18,7 +18,8 @@ jobs:
           ref: production
           clean: false
 
-      # 4. Install backend dependencies
+
+      # 2. Install backend dependencies
       - name: Install Backend Dependencies
         shell: powershell
         run: |
@@ -30,7 +31,7 @@ jobs:
           }
 
 
-      # 5. Build backend
+      # 3. Build backend
       - name: Build Backend
         shell: powershell
         run: |
@@ -42,7 +43,7 @@ jobs:
           }
 
 
-      # 6. Install frontend dependencies
+      # 4. Install frontend dependencies
       - name: Install Frontend Dependencies
         shell: powershell
         run: |
@@ -54,7 +55,7 @@ jobs:
           }
 
 
-      # 7. Build frontend
+      # 5. Build frontend
       - name: Build Frontend
         shell: powershell
         run: |
@@ -66,7 +67,7 @@ jobs:
           }
 
 
-      # 8. Verify frontend dist exists
+      # 6. Verify frontend dist exists
       - name: Verify Frontend Dist
         shell: powershell
         run: |
@@ -79,29 +80,32 @@ jobs:
           dir frontend\dist
 
 
-      # 9. Restart backend safely with PM2
-      - name: Restart Backend with PM2
+      # 7. Restart backend safely with PM2 (Zero Downtime)
+      - name: Reload Backend with PM2
         shell: powershell
         run: |
           cd backend
 
-          Write-Host "Stopping old process if exists..."
-          pm2 delete ayan-backend 2>$null
+          Write-Host "Reloading backend with PM2..."
 
-          Write-Host "Starting backend..."
-          pm2 start ecosystem.config.cjs --only ayan-backend --update-env
+          pm2 reload ecosystem.config.cjs --only ayan-backend --update-env 2>$null
 
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "PM2 start failed"
+            Write-Host "Process not running. Starting fresh..."
+            pm2 start ecosystem.config.cjs --only ayan-backend --update-env
+          }
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "PM2 start/reload failed"
             pm2 logs ayan-backend --lines 50 --nostream
             exit 1
           }
 
           pm2 save
-          Write-Host "PM2 process started successfully"
+          Write-Host "PM2 process running successfully"
 
 
-      # 10. Wait for application startup
+      # 8. Wait for application startup
       - name: Wait for Startup
         shell: powershell
         run: |
@@ -109,11 +113,13 @@ jobs:
           Start-Sleep -Seconds 5
 
 
-      # 11. Health check
+      # 9. Health check (HTTPS 443)
       - name: Health Check
         shell: powershell
         run: |
-          $port = 443
+          # Ignore SSL certificate validation for localhost
+          [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
           $url = "https://localhost/health"
 
           Write-Host "Testing health at $url"
@@ -133,6 +139,7 @@ jobs:
 
             } catch {
               Write-Host "Attempt $i failed"
+              Write-Host $_.Exception.Message
               Start-Sleep -Seconds 3
             }
           }
@@ -144,7 +151,7 @@ jobs:
           }
 
 
-      # 12. Deployment summary
+      # 10. Deployment summary
       - name: Deployment Summary
         shell: powershell
         run: |
