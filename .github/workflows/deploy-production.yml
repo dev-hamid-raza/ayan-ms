@@ -114,7 +114,7 @@ jobs:
         shell: powershell
         run: |
           $port = 443
-          $url = "https://localhost:$port/health"
+          $url = "https://localhost/health"
 
           Write-Host "Testing health at $url"
 
