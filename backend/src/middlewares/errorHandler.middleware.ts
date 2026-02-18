@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError.js";
+import { logger } from "../config/logger.js";
 
 export const errorHandler = (
     err: any,
@@ -8,8 +9,14 @@ export const errorHandler = (
     next: NextFunction
 ): void => {
 
-    // Always log full error on server
-    console.error("ERROR:", err);
+    // error logging
+    logger.error({
+        message: err.message,
+        stack: err.stack,
+        method: req.method,
+        url: req.originalUrl,
+        user: req.user?._id
+    })
 
     // Handle custom ApiError
     if (err instanceof ApiError) {
@@ -47,7 +54,10 @@ export const errorHandler = (
     // Production-safe default response
     res.status(500).json({
         success: false,
-        message: "Something went wrong",
+        message:
+            process.env.NODE_ENV === "production"
+                ? "Something went wrong"
+                : err.message,
         errors: [],
         data: null,
     });
