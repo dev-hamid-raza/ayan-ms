@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { adminResetUserPassword, checkAuthStatus, getAllUsers, loginUser, logoutUser, registerUser, updateMyPassword, updateUser } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/authenticate.middleware.js";
-import { authorizeRole } from "../middlewares/authorizeRole.js";
+import { authorizeRole } from "../middlewares/authorizeRole.middleware.js";
 import { ROLES } from "../config/accessControl.js";
 
 const router = Router();
