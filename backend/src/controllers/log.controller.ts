@@ -26,14 +26,26 @@ export const getLogs = asyncHandler(async (req: Request<{} ,{}, {}, {limit: numb
     const logs = []
 
     for await(const line of rl) {
-        const parsed = JSON.parse(line)
-            if(!level || parsed.level == level) {
-                logs.push(parsed)
-            }
+        const trimmedLine = line.trim()
+        if (!trimmedLine) {
+            continue
+        }
 
-            if(logs.length > limit) {
-                logs.shift()
-            }
+        let parsed
+        try {
+            parsed = JSON.parse(trimmedLine)
+        } catch {
+            // Skip lines that are not valid JSON
+            continue
+        }
+
+        if(!level || parsed.level == level) {
+            logs.push(parsed)
+        }
+
+        if(logs.length > limit) {
+            logs.shift()
+        }
     }
 
     return res
