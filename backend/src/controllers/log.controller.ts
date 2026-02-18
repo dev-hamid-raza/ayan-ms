@@ -2,9 +2,9 @@ import path from "path";
 import fs from "fs"
 import readline from "readline"
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const getLogs = asyncHandler(async (req: Request<{} ,{}, {}, {limit: number, level: string}>, res: Response) => {
     const logPath = path.join(process.cwd(), "logs", "app.log")
