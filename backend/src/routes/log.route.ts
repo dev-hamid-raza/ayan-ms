@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getLogs } from "../controllers/log.controller";
-import { verifyJWT } from "../middlewares/authenticate.middleware";
-import { authorizeRole } from "../middlewares/authorizeRole.middleware";
-import { ROLES } from "../config/accessControl";
+import { getLogs } from "../controllers/log.controller.js";
+import { verifyJWT } from "../middlewares/authenticate.middleware.js";
+import { authorizeRole } from "../middlewares/authorizeRole.middleware.js";
+import { ROLES } from "../config/accessControl.js";
 
 const router = Router()
 
