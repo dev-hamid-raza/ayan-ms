@@ -13,7 +13,7 @@ export const errorHandler = (
     logger.error({
         message: err.message,
         stack: err.stack,
-        method: err.method,
+        method: req.method,
         url: req.originalUrl,
         user: req.user?._id
     })
