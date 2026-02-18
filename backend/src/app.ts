@@ -6,9 +6,6 @@ import path from "path"
 import fs from "fs"
 import { fileURLToPath } from "url"
 
-import path from "path"
-import { fileURLToPath } from "url"
-
 import { errorHandler } from "./middlewares/errorHandler.middleware.js"
 
 // import routes
@@ -16,7 +13,6 @@ import userRouter from "./routes/user.route.js"
 import outwardGatePassRouter from "./routes/outwardGatePass.route.js"
 
 dotenv.config({
-    path: "./.env"
     path: "./.env"
 })
 
@@ -31,12 +27,9 @@ app.use(cors({
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 
-
-app.get("/health", (_req, res) => {
 
 app.get("/health", (_req, res) => {
     res.status(200).json({
