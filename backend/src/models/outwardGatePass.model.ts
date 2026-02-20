@@ -69,7 +69,8 @@ const outwardGatePassSchema = new Schema<IOutwardGatePass>(
             required: true,
             default: false
         },
-        updatedBy: String
+        updatedBy: String,
+        deletedBy: String,
     },
     { timestamps: true }
 );
