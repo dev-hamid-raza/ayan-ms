@@ -3,10 +3,17 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from "fs"
 
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    https: {
+      key: fs.readFileSync("../../certs/app.ayan-ms.com.key"),
+      cert: fs.readFileSync("../../certs/app.ayan-ms.com.crt")
+    }
+  },
   plugins: [
     react(),
     tailwindcss(),
