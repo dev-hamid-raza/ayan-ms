@@ -22,6 +22,7 @@ export interface IOutwardGatePass extends Document {
     containerNumber?: string;
     isDeleted: boolean
     updatedBy: string
+    deletedBy: string
 }
 
 export interface IOutwardGatePassRequestBody {

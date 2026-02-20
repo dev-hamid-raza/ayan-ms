@@ -197,6 +197,7 @@ export const deleteOutwardGatePass = asyncHandler(async (
     res: Response
 ) => {
     const { id } = req.params;
+    const user = req.user
 
     const outwardGatePass = await OutwardGatePass.findById(id);
 
@@ -205,6 +206,7 @@ export const deleteOutwardGatePass = asyncHandler(async (
     }
 
     outwardGatePass.isDeleted = true;
+    outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
     await outwardGatePass.save();
 
     return res
