@@ -23,6 +23,8 @@ export interface IOutwardGatePass {
     containerNumber?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    isDeleted: boolean
+    updatedBy: string
 }
 export interface IOutwardGatePassCreate {
     purpose: string;

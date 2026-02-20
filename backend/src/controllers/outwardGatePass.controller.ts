@@ -133,6 +133,7 @@ export const updateOutwardGatePass = asyncHandler(async (
 ) => {
     const { id } = req.params;
     const payload = req.body;
+    const user = req.user
 
     if(!payload || typeof payload !== "object") {
         throw new ApiError(400, "Request body is missing");
@@ -182,6 +183,7 @@ export const updateOutwardGatePass = asyncHandler(async (
         outwardGatePass.containerNumber = payload.containerNumber;
     }
     if (typeof payload.items !== "undefined") outwardGatePass.items = payload.items as IOutwardGatePassItems[];
+    if(typeof user?.firstName && typeof user?.lastName) outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
 
     await outwardGatePass.save();
 
@@ -195,23 +197,7 @@ export const deleteOutwardGatePass = asyncHandler(async (
     res: Response
 ) => {
     const { id } = req.params;
-
-    const deletedOutwardGatePass = await OutwardGatePass.findByIdAndDelete(id);
-
-    if (!deletedOutwardGatePass) {
-        throw new ApiError(404, "Gate Pass In not found");
-    }
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, deletedOutwardGatePass, "Gate Pass In deleted successfully"));
-});
-
-export const getOutwardGatePass = asyncHandler(async (
-    req: Request<{ id: string }>,
-    res: Response
-) => {
-    const { id } = req.params;
+    const user = req.user
 
     const outwardGatePass = await OutwardGatePass.findById(id);
 
@@ -219,13 +205,46 @@ export const getOutwardGatePass = asyncHandler(async (
         throw new ApiError(404, "Gate Pass In not found");
     }
 
+    outwardGatePass.isDeleted = true;
+    outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
+    await outwardGatePass.save();
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, outwardGatePass, "Gate Pass In deleted successfully"));
+});
+
+export const getOutwardGatePass = asyncHandler(async (
+    req: Request<{ id: string }>,
+    res: Response
+) => {
+    const { id } = req.params;
+    const userRole = req.user?.role;
+    const isAdmin = userRole === "admin";
+
+    const outwardGatePass = await OutwardGatePass.findById(id);
+
+    if (!outwardGatePass) {
+        throw new ApiError(404, "Gate Pass In not found");
+    }
+
+    // If normal user and gate pass is deleted, deny access
+    if (!isAdmin && outwardGatePass.isDeleted) {
+        throw new ApiError(403, "Access denied. This gate pass has been deleted");
+    }
+
     return res
         .status(200)
         .json(new ApiResponse(200, outwardGatePass, "Gate Pass In fetched successfully"));
 });
 
-export const getAllOutwardGatePasses = asyncHandler(async (_req: Request, res: Response) => {
-    const outwardGatePasses = await OutwardGatePass.find().sort({ OGPNumber : -1 });
+export const getAllOutwardGatePasses = asyncHandler(async (req: Request, res: Response) => {
+    const userRole = req.user?.role;
+    const isAdmin = userRole === "admin";
+
+    // Admin can see all gate passes (including deleted ones), normal users can only see non-deleted ones
+    const query = isAdmin ? {} : { isDeleted: false };
+    const outwardGatePasses = await OutwardGatePass.find(query).sort({ OGPNumber : -1 });
 
     return res
         .status(200)

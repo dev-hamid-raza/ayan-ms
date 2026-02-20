@@ -64,6 +64,13 @@ const outwardGatePassSchema = new Schema<IOutwardGatePass>(
             required: true 
         },
         containerNumber: { type: String },
+        isDeleted : {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        updatedBy: String,
+        deletedBy: String,
     },
     { timestamps: true }
 );
