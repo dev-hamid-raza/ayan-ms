@@ -70,10 +70,13 @@ export function PrimaryTable<TData, TValue>({
                         </colgroup>
                         <TableBody className="[&_tr:last-child]:border-b">
                             {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
+                                table.getRowModel().rows.map((row) => {
+                                    const isDeleted = (row.original as Record<string, unknown>)?.isDeleted === true;
+                                    return (
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && "selected"}
+                                        className={isDeleted ? "bg-destructive/10 hover:bg-destructive/20 opacity-75" : ""}
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id} className="whitespace-normal">
@@ -81,7 +84,8 @@ export function PrimaryTable<TData, TValue>({
                                             </TableCell>
                                         ))}
                                     </TableRow>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -98,10 +102,12 @@ export function PrimaryTable<TData, TValue>({
             <div className="md:hidden flex flex-col h-full overflow-auto">
                 {table.getRowModel().rows?.length ? (
                     <div className="p-4 space-y-4">
-                        {table.getRowModel().rows.map((row) => (
+                        {table.getRowModel().rows.map((row) => {
+                            const isDeleted = (row.original as Record<string, unknown>)?.isDeleted === true;
+                            return (
                             <div
                                 key={row.id}
-                                className="border rounded-lg p-4 bg-white space-y-3"
+                                className={`border rounded-lg p-4 space-y-3 ${isDeleted ? "bg-destructive/10 border-destructive/50" : "bg-white"}`}
                                 data-state={row.getIsSelected() && "selected"}
                             >
                                 {row.getVisibleCells().map((cell) => {
@@ -120,7 +126,8 @@ export function PrimaryTable<TData, TValue>({
                                     );
                                 })}
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="h-24 flex items-center justify-center text-center text-muted-foreground">

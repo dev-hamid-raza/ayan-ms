@@ -196,15 +196,18 @@ export const deleteOutwardGatePass = asyncHandler(async (
 ) => {
     const { id } = req.params;
 
-    const deletedOutwardGatePass = await OutwardGatePass.findByIdAndDelete(id);
+    const outwardGatePass = await OutwardGatePass.findById(id);
 
-    if (!deletedOutwardGatePass) {
+    if (!outwardGatePass) {
         throw new ApiError(404, "Gate Pass In not found");
     }
 
+    outwardGatePass.isDeleted = true;
+    await outwardGatePass.save();
+
     return res
         .status(200)
-        .json(new ApiResponse(200, deletedOutwardGatePass, "Gate Pass In deleted successfully"));
+        .json(new ApiResponse(200, outwardGatePass, "Gate Pass In deleted successfully"));
 });
 
 export const getOutwardGatePass = asyncHandler(async (
@@ -212,6 +215,8 @@ export const getOutwardGatePass = asyncHandler(async (
     res: Response
 ) => {
     const { id } = req.params;
+    const userRole = req.user?.role;
+    const isAdmin = userRole === "admin";
 
     const outwardGatePass = await OutwardGatePass.findById(id);
 
@@ -219,13 +224,23 @@ export const getOutwardGatePass = asyncHandler(async (
         throw new ApiError(404, "Gate Pass In not found");
     }
 
+    // If normal user and gate pass is deleted, deny access
+    if (!isAdmin && outwardGatePass.isDeleted) {
+        throw new ApiError(403, "Access denied. This gate pass has been deleted");
+    }
+
     return res
         .status(200)
         .json(new ApiResponse(200, outwardGatePass, "Gate Pass In fetched successfully"));
 });
 
-export const getAllOutwardGatePasses = asyncHandler(async (_req: Request, res: Response) => {
-    const outwardGatePasses = await OutwardGatePass.find().sort({ OGPNumber : -1 });
+export const getAllOutwardGatePasses = asyncHandler(async (req: Request, res: Response) => {
+    const userRole = req.user?.role;
+    const isAdmin = userRole === "admin";
+
+    // Admin can see all gate passes (including deleted ones), normal users can only see non-deleted ones
+    const query = isAdmin ? {} : { isDeleted: false };
+    const outwardGatePasses = await OutwardGatePass.find(query).sort({ OGPNumber : -1 });
 
     return res
         .status(200)
