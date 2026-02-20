@@ -133,6 +133,7 @@ export const updateOutwardGatePass = asyncHandler(async (
 ) => {
     const { id } = req.params;
     const payload = req.body;
+    const user = req.user
 
     if(!payload || typeof payload !== "object") {
         throw new ApiError(400, "Request body is missing");
@@ -182,6 +183,7 @@ export const updateOutwardGatePass = asyncHandler(async (
         outwardGatePass.containerNumber = payload.containerNumber;
     }
     if (typeof payload.items !== "undefined") outwardGatePass.items = payload.items as IOutwardGatePassItems[];
+    if(typeof user?.firstName && typeof user?.lastName) outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
 
     await outwardGatePass.save();
 

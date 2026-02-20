@@ -224,13 +224,11 @@ function ViewOGP() {
 
                 {/* Issued By */}
                 <div className="bg-card rounded-lg border border-border p-6">
-                    <h3 className="text-base font-semibold mb-4 text-foreground">Printed By</h3>
+                    <h3 className="text-base font-semibold mb-4 text-foreground">Prepared By</h3>
                     <div className="space-y-3">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Name:</span>
-                            <span className="font-semibold text-foreground">
-                                {user ? `${user.firstName} ${user.lastName}` : '-'}
-                            </span>
+                            <span className="font-semibold text-foreground">{ogp?.issuedBy}</span>
                         </div>
                         {ogp?.createdAt && (
                             <>
@@ -258,6 +256,40 @@ function ViewOGP() {
                         )}
                     </div>
                 </div>
+
+                {/* Updated By - Only show if updated */}
+                {ogp?.updatedBy && ogp?.updatedAt && ogp?.createdAt && 
+                 new Date(ogp.updatedAt).getTime() !== new Date(ogp.createdAt).getTime() && (
+                    <div className="bg-card rounded-lg border border-border p-6">
+                        <h3 className="text-base font-semibold mb-4 text-foreground">Last Modified By</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Name:</span>
+                                <span className="font-semibold text-foreground">{ogp?.updatedBy}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Date:</span>
+                                <span className="font-semibold text-foreground">
+                                    {new Date(ogp?.updatedAt).toLocaleDateString('en-PK', { 
+                                        day: '2-digit', 
+                                        month: 'long', 
+                                        year: 'numeric' 
+                                    })}
+                                </span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Time:</span>
+                                <span className="font-semibold text-foreground">
+                                    {new Date(ogp?.updatedAt).toLocaleTimeString('en-PK', { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit', 
+                                        second: '2-digit'
+                                    })}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Items Table */}
                 <div className="bg-card rounded-lg border border-border p-6">

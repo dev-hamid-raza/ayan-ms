@@ -21,6 +21,7 @@ export interface IOutwardGatePass extends Document {
     mobileNumber: string;
     containerNumber?: string;
     isDeleted: boolean
+    updatedBy: string
 }
 
 export interface IOutwardGatePassRequestBody {

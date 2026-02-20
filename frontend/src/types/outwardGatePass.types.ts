@@ -24,6 +24,7 @@ export interface IOutwardGatePass {
     createdAt?: Date;
     updatedAt?: Date;
     isDeleted: boolean
+    updatedBy: string
 }
 export interface IOutwardGatePassCreate {
     purpose: string;
