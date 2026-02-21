@@ -4,6 +4,7 @@ import { IOutwardGatePassRequestBody, IOutwardGatePassItems } from "../types/out
 import { ApiError } from "../utils/ApiError.js";
 import { OutwardGatePass } from "../models/outwardGatePass.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { saveAuditLog, getChanges } from "../utils/auditLog.util.js";
 
 // Function to validate the items array
 const validateItems = (items: IOutwardGatePassItems[]) => {
@@ -116,11 +117,19 @@ export const createOutwardGatePass = asyncHandler(async (req: Request<{}, {}, IO
     const parsedDate = new Date(payload.date as unknown as string);
     payload.date = parsedDate as unknown as Date;
 
-
     const outwardGatePass = new OutwardGatePass(payload);
+    await outwardGatePass.save();
 
-        await outwardGatePass.save();
-        return res
+    // Log the creation
+    await saveAuditLog({
+        modelName: "outwardGatePass",
+        documentId: outwardGatePass._id.toString(),
+        action: "CREATE",
+        changes: getChanges({}, outwardGatePass.toObject()),
+        req,
+    });
+
+    return res
         .status(201)
         .json(
             new ApiResponse(201, outwardGatePass, "Gate Pass In created successfully")
@@ -172,6 +181,9 @@ export const updateOutwardGatePass = asyncHandler(async (
         throw new ApiError(404, "Gate Pass In not found");
     }
 
+    // Store old data for audit log
+    const oldData = outwardGatePass.toObject();
+
     if (typeof payload.purpose === "string") outwardGatePass.purpose = payload.purpose.trim();
     if (typeof payload.type === "string") outwardGatePass.type = payload.type.trim();
     if (typeof payload.vehicleNumber === "string") outwardGatePass.vehicleNumber = payload.vehicleNumber.trim();
@@ -186,6 +198,18 @@ export const updateOutwardGatePass = asyncHandler(async (
     if(typeof user?.firstName && typeof user?.lastName) outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
 
     await outwardGatePass.save();
+
+    // Log the changes
+    const changes = getChanges(oldData, outwardGatePass.toObject());
+    if (changes.length > 0) {
+        await saveAuditLog({
+            modelName: "outwardGatePass",
+            documentId: id,
+            action: "UPDATE",
+            changes,
+            req,
+        });
+    }
 
     return res
         .status(200)
@@ -205,9 +229,22 @@ export const deleteOutwardGatePass = asyncHandler(async (
         throw new ApiError(404, "Gate Pass In not found");
     }
 
+    // Store old data for audit log
+    const oldData = outwardGatePass.toObject();
+
     outwardGatePass.isDeleted = true;
     outwardGatePass.updatedBy = `${user?.firstName} ${user?.lastName}`
     await outwardGatePass.save();
+
+    // Log the deletion
+    const changes = getChanges(oldData, outwardGatePass.toObject());
+    await saveAuditLog({
+        modelName: "outwardGatePass",
+        documentId: id,
+        action: "DELETE",
+        changes,
+        req,
+    });
 
     return res
         .status(200)

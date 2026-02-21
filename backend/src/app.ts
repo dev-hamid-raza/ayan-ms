@@ -12,6 +12,7 @@ import { errorHandler } from "./middlewares/errorHandler.middleware.js"
 import userRouter from "./routes/user.route.js"
 import outwardGatePassRouter from "./routes/outwardGatePass.route.js"
 import logRouter from "./routes/log.route.js"
+import auditLogRouter from "./routes/auditLog.route.js"
 
 dotenv.config({
     path: "./.env"
@@ -43,6 +44,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/outward-gate-pass", outwardGatePassRouter)
 app.use("/api/v1/log", logRouter)
+app.use("/api/v1/audit-logs", auditLogRouter)
 
 
 
