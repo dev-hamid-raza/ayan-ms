@@ -1,6 +1,6 @@
 import { MODULES } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
-import { ArrowDownToLine, ArrowUpFromLine, Bot, Scissors, ShieldUser, SquareTerminal } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bot, Logs, Scissors, ShieldUser, SquareTerminal, TriangleAlert, User2 } from "lucide-react";
 
 export const NAV_ITEM: NavGroup = [
     {
@@ -40,6 +40,26 @@ export const NAV_ITEM: NavGroup = [
         title: "Admin",
         url: "/user-management",
         icon: ShieldUser,
-        permission: MODULES.ADMIN_PANEL,
+        // permission: MODULES.ADMIN_PANEL,
+        items: [
+            {
+                title: "User Management",
+                url: "/user-management",
+                permission: MODULES.USER_MANAGEMENT,
+                icon: User2,
+            },
+            {
+                title: "Audit Logs",
+                url: "/audit-logs",
+                permission: MODULES.AUDIT_LOGS,
+                icon: Logs,
+            },
+            {
+                title: "Error Logs",
+                url: "/error-logs",
+                permission: MODULES.ERROR_LOGS,
+                icon: TriangleAlert,
+            },
+        ]
     },
 ]

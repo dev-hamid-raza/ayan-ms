@@ -11,5 +11,7 @@ export const ROUTES = {
     },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',
+        AUDIT_LOGS: 'audit-logs',
+        ERROR_LOGS: 'error-logs',
     },
 }
