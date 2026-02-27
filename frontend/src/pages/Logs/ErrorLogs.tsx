@@ -1,6 +1,7 @@
 import Header from '@/components/common/Header'
 import { PrimaryTable } from '@/components/common/PrimaryTable'
 import { SkeletonHeader } from '@/components/common/SkeletonHeader'
+import { SkeletonTable } from '@/components/common/SkeletonTable'
 import { logColumns } from '@/components/TableColumns/errorLogs'
 import useFetchFn from '@/hooks/useFetch'
 import { fetchErrorLogs } from '@/services/errorLogs'
@@ -31,10 +32,15 @@ function ErrorLogs() {
                         </div>
             <div className='flex-1 min-h-0 px-5 pt-5 pb-5'>
                 <div className='h-full'>
-                <PrimaryTable
-                    columns={logColumns}
-                    data={normalizedLogs}
-                    />
+                    {loading ? (
+                         <SkeletonTable rows={15} columns={9} />
+                    ) : (
+
+                        <PrimaryTable
+                            columns={logColumns}
+                            data={normalizedLogs}
+                            />
+                    )}
                     </div>
             </div>
         </div>
