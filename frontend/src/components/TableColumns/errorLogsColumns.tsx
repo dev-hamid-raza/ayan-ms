@@ -12,7 +12,15 @@ export const logColumns: ColumnDef<LogRow>[] = [
     {
         accessorKey: "time",
         header: "Time",
-        cell: ({ row }) => new Date(row.original.time).toLocaleString(),
+        cell: ({ row }) => new Date(row.original.time).toLocaleString("en-PK", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+        }),
     },
     { accessorKey: "pid", header: "PID" },
     { accessorKey: "hostname", header: "Hostname" },
