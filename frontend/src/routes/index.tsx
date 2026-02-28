@@ -10,6 +10,8 @@ import OutwardGatePass from "@/pages/OutwardGatePass/OutwardGatePass";
 import CreateOGP from "@/pages/OutwardGatePass/CreateOGP";
 import Forbidden from "@/pages/Forbidden";
 import ViewOGP from "@/pages/OutwardGatePass/ViewOGP";
+import AuditLogs from "@/pages/Logs/AuditLogs";
+import ErrorLogs from "@/pages/Logs/ErrorLogs";
 
 export const routes: RouteObject[] = [
   {
@@ -67,8 +69,24 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.ADMIN.USER_MANAGEMENT,
         element: (
-          <ProtectedRoute module={MODULES.ADMIN_PANEL}>
+          <ProtectedRoute module={MODULES.USER_MANAGEMENT}>
             <UserManagement />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.ADMIN.AUDIT_LOGS,
+        element: (
+          <ProtectedRoute module={MODULES.AUDIT_LOGS}>
+            <AuditLogs />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.ADMIN.ERROR_LOGS,
+        element: (
+          <ProtectedRoute module={MODULES.ERROR_LOGS}>
+            <ErrorLogs />
           </ProtectedRoute>
       )
       },

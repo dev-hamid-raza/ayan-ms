@@ -17,7 +17,9 @@ const MODULE_LABELS: Record<MODULES, string> = {
     [MODULES.GATE_PASS_IN]: "Gate Pass In",
     [MODULES.GATE_PASS_OUT]: "Gate Pass Out",
     [MODULES.STITCHING_RATES]: "Stitching Rate",
-    [MODULES.ADMIN_PANEL]: "Admin Panel",
+    [MODULES.USER_MANAGEMENT]: "User Management",
+    [MODULES.AUDIT_LOGS]: "Audit Logs",
+    [MODULES.ERROR_LOGS]: "Error Logs",
 }
 
 // ✅ choose which modules to show here (and in what order)
@@ -25,7 +27,6 @@ const MODULE_LIST: MODULES[] = [
     MODULES.GATE_PASS_IN,
     MODULES.GATE_PASS_OUT,
     MODULES.STITCHING_RATES,
-    MODULES.ADMIN_PANEL,
 ]
 
 interface CreateUserSidebarProp {
