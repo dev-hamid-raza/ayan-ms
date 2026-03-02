@@ -1,6 +1,6 @@
 import { MODULES } from "@/types/user.types";
 import type { NavGroup } from "@/types/nav.types";
-import { ArrowDownToLine, ArrowUpFromLine, Bot, Logs, Scissors, ShieldUser, SquareTerminal, TriangleAlert, User2 } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bot, CalendarCheck2, ClockFading, Landmark, Logs, Scissors, Shapes, ShieldUser, SquareTerminal, Tag, TriangleAlert, User2, UserCog2, UsersRound } from "lucide-react";
 
 export const NAV_ITEM: NavGroup = [
     {
@@ -33,6 +33,49 @@ export const NAV_ITEM: NavGroup = [
                 url: "#",
                 permission: MODULES.STITCHING_RATES,
                 icon: Scissors,
+            },
+        ],
+    },
+    {
+        title: "HRM",
+        url: "#",
+        icon: UserCog2,
+        items: [
+            {
+                title: "Employees",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: UsersRound,
+            },
+            {
+                title: "Departments",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: Landmark,
+            },
+            {
+                title: "Designations",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: Tag,
+            },
+            {
+                title: "Shifts",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: ClockFading,
+            },
+            {
+                title: "Attendance",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: CalendarCheck2,
+            },
+            {
+                title: "Employee Types",
+                url: "#",
+                permission: MODULES.STITCHING_RATES,
+                icon: Shapes,
             },
         ],
     },
