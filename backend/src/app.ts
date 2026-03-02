@@ -13,6 +13,7 @@ import userRouter from "./routes/user.route.js"
 import outwardGatePassRouter from "./routes/outwardGatePass.route.js"
 import logRouter from "./routes/log.route.js"
 import auditLogRouter from "./routes/auditLog.route.js"
+import hrmsRouter from "./routes/hrms.route.js"
 
 dotenv.config({
     path: "./.env"
@@ -45,6 +46,7 @@ app.use("/api/v1/users", userRouter)
 app.use("/api/v1/outward-gate-pass", outwardGatePassRouter)
 app.use("/api/v1/log", logRouter)
 app.use("/api/v1/audit-logs", auditLogRouter)
+app.use("/api/v1/hrms", hrmsRouter)
 
 
 

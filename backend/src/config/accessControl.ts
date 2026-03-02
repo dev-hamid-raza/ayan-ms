@@ -7,6 +7,7 @@ export enum MODULES {
     GATE_PASS_IN = 'GATE_PASS_IN',
     GATE_PASS_OUT = 'GATE_PASS_OUT',
     STITCHING_RATES = 'STITCHING_RATES',
+    HRMS = 'HRMS',
 }
 
 export enum ACTIONS {
