@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-import { IDepartment } from "../../types/hrmsTypes/department.types";
+import { IDepartment } from "../../types/hrmTypes/department.types";
 
 const departmentSchema = new Schema<IDepartment>({
     departmentName : {

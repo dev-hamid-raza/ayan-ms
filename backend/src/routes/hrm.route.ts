@@ -1,36 +1,36 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/authenticate.middleware";
-import { getPunches, punchTime } from "../controllers/hrmsController/attendance.controller";
+import { getPunches, punchTime } from "../controllers/hrmController/attendance.controller";
 import {
     createDepartment,
     deleteDepartment,
     departmentList,
     updateDepartment
-} from "../controllers/hrmsController/department.controller";
+} from "../controllers/hrmController/department.controller";
 import {
     createDesignation,
     deleteDesignation,
     designationList,
     updateDesignation
-} from "../controllers/hrmsController/designation.controller";
+} from "../controllers/hrmController/designation.controller";
 import {
     createEmployee,
     employeesList,
     updateEmployee
-} from "../controllers/hrmsController/employee.controller";
+} from "../controllers/hrmController/employee.controller";
 import { upload } from "../middlewares/multer.middleware";
 import {
     createEmpType,
     deleteEmpType,
     empTypeList,
     updateEmpType
-} from "../controllers/hrmsController/employeeType.controller";
+} from "../controllers/hrmController/employeeType.controller";
 import {
     deleteShift,
     shiftCreate,
     shiftList,
     updateShift
-} from "../controllers/hrmsController/shift.controller";
+} from "../controllers/hrmController/shift.controller";
 
 const router = Router()
 

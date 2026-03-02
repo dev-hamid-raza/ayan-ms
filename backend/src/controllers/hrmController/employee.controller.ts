@@ -6,14 +6,14 @@ import fs from "fs"
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { IEmployeeBody } from "../../types/hrmsTypes/employee.types.js";
-import { Shift } from "../../models/hrmsModels/shift.model.js";
-import { EmployeeType } from "../../models/hrmsModels/employeeType.model.js";
-import { Designation } from "../../models/hrmsModels/designation.model.js";
-import { Department } from "../../models/hrmsModels/department.model.js";
-import { calculateRestData } from "../../services/hrms/calculateRest.services.js";
+import { IEmployeeBody } from "../../types/hrmTypes/employee.types.js";
+import { Shift } from "../../models/hrmModels/shift.model.js";
+import { EmployeeType } from "../../models/hrmModels/employeeType.model.js";
+import { Designation } from "../../models/hrmModels/designation.model.js";
+import { Department } from "../../models/hrmModels/department.model.js";
+import { calculateRestData } from "../../services/hrm/calculateRest.services.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

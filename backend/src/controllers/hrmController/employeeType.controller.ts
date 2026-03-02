@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { EmployeeType } from "../../models/hrmsModels/employeeType.model.js";
+import { EmployeeType } from "../../models/hrmModels/employeeType.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 
 export const createEmpType = asyncHandler(async (req:Request<{}, {}, {empType: string}>, res: Response) => {
     const { empType } = req.body

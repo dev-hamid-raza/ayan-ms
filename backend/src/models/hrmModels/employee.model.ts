@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-import { IEmployee } from "../../types/hrmsTypes/employee.types";
+import { IEmployee } from "../../types/hrmTypes/employee.types";
 import { Counter } from "../counter.model";
 
 const employeeSchema = new Schema<IEmployee>({

@@ -1,11 +1,11 @@
 import { Types } from "mongoose";
 
 import { getMinutesFromDate } from "../../utils/time.js";
-import { Attendance } from "../../models/hrmsModels/attendance.model.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
-import { IAttendance } from "../../types/hrmsTypes/attendance.types.js";
-import { IEmployee } from "../../types/hrmsTypes/employee.types.js";
-import { IShift } from "../../types/hrmsTypes/shift.types.js";
+import { Attendance } from "../../models/hrmModels/attendance.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
+import { IAttendance } from "../../types/hrmTypes/attendance.types.js";
+import { IEmployee } from "../../types/hrmTypes/employee.types.js";
+import { IShift } from "../../types/hrmTypes/shift.types.js";
 
 export const updateAttendanceSummary = (att: IAttendance): void => {
     const punches = att.punches.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())

@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-import { IShift } from "../../types/hrmsTypes/shift.types";
+import { IShift } from "../../types/hrmTypes/shift.types";
 
 const shiftSchema = new Schema<IShift>({
     shiftName: {

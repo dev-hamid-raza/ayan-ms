@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-import { IAttendance, IPunch } from "../../types/hrmsTypes/attendance.types";
+import { IAttendance, IPunch } from "../../types/hrmTypes/attendance.types";
 
 const punchSchema = new Schema<IPunch>({
     time: {

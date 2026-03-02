@@ -1,6 +1,6 @@
 import mongoose, {Model, Schema} from "mongoose";
 
-import { IDesignation } from "../../types/hrmsTypes/designation.types";
+import { IDesignation } from "../../types/hrmTypes/designation.types";
 
 const designationSchema = new Schema<IDesignation>({
     designationName: {

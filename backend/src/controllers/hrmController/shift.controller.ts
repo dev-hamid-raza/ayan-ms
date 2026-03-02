@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ShiftRequestBody } from "../../types/hrmsTypes/shift.types.js";
+import { ShiftRequestBody } from "../../types/hrmTypes/shift.types.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { calculateHours, minutesToTimeString, timeStringToMinutes } from "../../utils/time.js";
-import { Shift } from "../../models/hrmsModels/shift.model.js";
+import { Shift } from "../../models/hrmModels/shift.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 
 export const shiftCreate = asyncHandler(async (req: Request<{}, {}, ShiftRequestBody>, res: Response) => {
     const { startTime, endTime, lateInRelaxation, earlyOutRelaxation, brakeEnd, brakeStart, shiftName } = req.body

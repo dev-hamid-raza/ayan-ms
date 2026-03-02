@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Designation } from "../../models/hrmsModels/designation.model.js";
+import { Designation } from "../../models/hrmModels/designation.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 
 //! Create designation
 export const createDesignation = asyncHandler(async (req: Request<{}, {}, { designationName: string }>, res: Response) => {

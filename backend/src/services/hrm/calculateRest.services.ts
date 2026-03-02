@@ -1,5 +1,5 @@
-import { Employee } from "../../models/hrmsModels/employee.model.js";
-import { RestData } from "../../types/hrmsTypes/calculateRest.types.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
+import { RestData } from "../../types/hrmTypes/calculateRest.types.js";
 import { countDayInMonth } from "../../utils/countDays.js";
 
 export const updateMonthlyRestQuota = async () => {

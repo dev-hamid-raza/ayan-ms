@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { Department } from "../../models/hrmsModels/department.model.js";
+import { Department } from "../../models/hrmModels/department.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 
 //! Create Department
 

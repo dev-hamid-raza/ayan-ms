@@ -3,10 +3,10 @@ import mongoose, { Types } from "mongoose";
 
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
-import { Attendance } from "../../models/hrmsModels/attendance.model.js";
-import { Employee } from "../../models/hrmsModels/employee.model.js";
+import { Attendance } from "../../models/hrmModels/attendance.model.js";
+import { Employee } from "../../models/hrmModels/employee.model.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import { updateAttendanceSummary } from "../../services/hrms/attendance.services.js";
+import { updateAttendanceSummary } from "../../services/hrm/attendance.services.js";
 
 //! Record punch time
 export const punchTime = asyncHandler(async (req: Request<{}, {}, { empCode: number, timeStamp: string }>, res: Response) => {
