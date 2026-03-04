@@ -9,6 +9,9 @@ export const ROUTES = {
         VIEW: "outward-gate-pass/:id",
         EDIT: "outward-gate-pass/edit/:id",
     },
+    HRM: {
+        DEPARTMENTS: 'hrm-departments'
+    },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',
         AUDIT_LOGS: 'audit-logs',

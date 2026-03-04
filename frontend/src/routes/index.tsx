@@ -12,6 +12,7 @@ import Forbidden from "@/pages/Forbidden";
 import ViewOGP from "@/pages/OutwardGatePass/ViewOGP";
 import AuditLogs from "@/pages/Logs/AuditLogs";
 import ErrorLogs from "@/pages/Logs/ErrorLogs";
+import DepartmentsHrm from "@/pages/Hrm/DepartmentsHrm";
 
 export const routes: RouteObject[] = [
   {
@@ -87,6 +88,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute module={MODULES.ERROR_LOGS}>
             <ErrorLogs />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.HRM.DEPARTMENTS,
+        element: (
+          <ProtectedRoute module={MODULES.HRM}>
+            <DepartmentsHrm />
           </ProtectedRoute>
       )
       },

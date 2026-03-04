@@ -12,6 +12,7 @@ export enum MODULES {
     USER_MANAGEMENT = 'USER_MANAGEMENT',
     AUDIT_LOGS = 'AUDIT_LOGS',
     ERROR_LOGS = 'ERROR_LOGS',
+    HRM = 'HRM',
 }
 
 export enum ACTIONS {

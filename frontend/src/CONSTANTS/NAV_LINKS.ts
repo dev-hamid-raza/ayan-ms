@@ -44,12 +44,12 @@ export const NAV_ITEM: NavGroup = [
             {
                 title: "Employees",
                 url: "#",
-                permission: MODULES.STITCHING_RATES,
+                permission: MODULES.HRM,
                 icon: UsersRound,
             },
             {
                 title: "Departments",
-                url: "#",
+                url: "/hrm-departments",
                 permission: MODULES.STITCHING_RATES,
                 icon: Landmark,
             },
