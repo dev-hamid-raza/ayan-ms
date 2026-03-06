@@ -62,10 +62,12 @@ router.route('/employee/create').post(upload.single('image'), createEmployee)
 router.route('/employee/update/:id').post(upload.single('image'), updateEmployee)
 
 // ========== employeeType routes ===========
-router.route('/emp-type').get(empTypeList)
-router.route('/emp-type/create').post(createEmpType)
-router.route('/emp-type/delete/:id').delete(deleteEmpType)
-router.route('/emp-type/update/:id').post(updateEmpType)
+router.route('/emp-types')
+    .get(empTypeList)
+    .post(createEmpType)
+router.route('/emp-types/:id')
+    .delete(deleteEmpType)
+    .post(updateEmpType)
 
 // ========== shifts routes ===========
 router.route('shift').get(shiftList)

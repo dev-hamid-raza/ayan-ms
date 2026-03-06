@@ -14,6 +14,7 @@ import AuditLogs from "@/pages/Logs/AuditLogs";
 import ErrorLogs from "@/pages/Logs/ErrorLogs";
 import DepartmentsHrm from "@/pages/Hrm/DepartmentsHrm";
 import DesignationsHrm from "@/pages/Hrm/DesignationsHrm";
+import EmpTypeHrm from "@/pages/Hrm/EmpTypeHrm";
 
 export const routes: RouteObject[] = [
   {
@@ -105,6 +106,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute module={MODULES.HRM}>
             <DesignationsHrm />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.HRM.EMP_TYPE,
+        element: (
+          <ProtectedRoute module={MODULES.HRM}>
+            <EmpTypeHrm />
           </ProtectedRoute>
       )
       },

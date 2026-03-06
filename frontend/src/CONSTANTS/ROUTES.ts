@@ -12,6 +12,7 @@ export const ROUTES = {
     HRM: {
         DEPARTMENTS: 'hrm-departments',
         DESIGNATIONS: 'hrm-designations',
+        EMP_TYPE: 'hrm-emp-types',
     },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',

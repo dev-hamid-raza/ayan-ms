@@ -13,3 +13,10 @@ export interface IDesignations {
 }
 
 export type IDesignationsApiResponse = ApiResponse<IDesignations[]>
+
+export interface IEmpType {
+    _id: string
+    empType: string
+}
+
+export type IEmpTypeApiResponse = ApiResponse<IEmpType[]>

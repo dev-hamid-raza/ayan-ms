@@ -68,7 +68,7 @@ const DeleteDepartmentButton = ({ id, departmentName, onSubmitted }: DeleteDepar
                 confirmVariant="destructive"
             >
                 <p className="text-sm text-muted-foreground">
-                    Are you sure you want to delete{departmentName ? `${departmentName} Department` : " this department"}?
+                    Are you sure you want to delete {departmentName ? `${departmentName} Department` : " this department"}?
                 </p>
             </ConfirmDialog>
         </>
