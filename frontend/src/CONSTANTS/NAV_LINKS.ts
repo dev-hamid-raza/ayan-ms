@@ -55,7 +55,7 @@ export const NAV_ITEM: NavGroup = [
             },
             {
                 title: "Designations",
-                url: "#",
+                url: "/hrm-designations",
                 permission: MODULES.STITCHING_RATES,
                 icon: Tag,
             },

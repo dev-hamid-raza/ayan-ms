@@ -10,7 +10,8 @@ export const ROUTES = {
         EDIT: "outward-gate-pass/edit/:id",
     },
     HRM: {
-        DEPARTMENTS: 'hrm-departments'
+        DEPARTMENTS: 'hrm-departments',
+        DESIGNATIONS: 'hrm-designations',
     },
     ADMIN : {
         USER_MANAGEMENT: 'user-management',

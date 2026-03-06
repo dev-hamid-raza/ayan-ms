@@ -6,3 +6,10 @@ export interface IDepartments {
 }
 
 export type IDepartmentsApiResponse = ApiResponse<IDepartments[]>
+
+export interface IDesignations {
+    _id: string
+    designationName: string
+}
+
+export type IDesignationsApiResponse = ApiResponse<IDesignations[]>

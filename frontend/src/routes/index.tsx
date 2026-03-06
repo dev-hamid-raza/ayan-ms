@@ -13,6 +13,7 @@ import ViewOGP from "@/pages/OutwardGatePass/ViewOGP";
 import AuditLogs from "@/pages/Logs/AuditLogs";
 import ErrorLogs from "@/pages/Logs/ErrorLogs";
 import DepartmentsHrm from "@/pages/Hrm/DepartmentsHrm";
+import DesignationsHrm from "@/pages/Hrm/DesignationsHrm";
 
 export const routes: RouteObject[] = [
   {
@@ -96,6 +97,14 @@ export const routes: RouteObject[] = [
         element: (
           <ProtectedRoute module={MODULES.HRM}>
             <DepartmentsHrm />
+          </ProtectedRoute>
+      )
+      },
+      {
+        path: ROUTES.HRM.DESIGNATIONS,
+        element: (
+          <ProtectedRoute module={MODULES.HRM}>
+            <DesignationsHrm />
           </ProtectedRoute>
       )
       },
