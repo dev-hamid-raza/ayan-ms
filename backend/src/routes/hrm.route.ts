@@ -49,10 +49,12 @@ router.route('/departments/:id')
     .delete(deleteDepartment)
 
 // ========== designation routes ===========
-router.route('/designation').get(designationList)
-router.route('/designation/create').post(createDesignation)
-router.route('/designation/delete/:id').delete(deleteDesignation)
-router.route('/designation/update/:id').post(updateDesignation)
+router.route('/designations')
+    .get(designationList)
+    .post(createDesignation)
+router.route('/designations/:id')
+    .delete(deleteDesignation)
+    .post(updateDesignation)
 
 // ========== employee routes ===========
 router.route('/employee').get(employeesList)

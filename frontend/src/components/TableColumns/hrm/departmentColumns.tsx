@@ -48,7 +48,7 @@ const DeleteDepartmentButton = ({ id, departmentName, onSubmitted }: DeleteDepar
 
     return (
         <>
-            <PrimaryTooltip content="Delete OGP">
+            <PrimaryTooltip content="Delete">
                 <Button
                     size="icon-sm"
                     variant="ghost"
